@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f0e7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17110d" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="V60">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>V60</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f0e7; --card:#fffaf3; --ink:#2a1d15; --muted:#7a6656; --line:#e6d9c8;
+    --accent:#b5652b; --accent-soft:#f3dfcc; --ok:#4f7a4a; --warn:#b3412e;
+    --shadow:0 1px 2px rgba(42,29,21,.06),0 6px 24px rgba(42,29,21,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#17110d; --card:#211913; --ink:#f3e9dd; --muted:#b39d89; --line:#3a2c22;
+      --accent:#e08a4a; --accent-soft:#3a2618; --ok:#8fbf86; --warn:#ef7a62;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.25); }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left))}
+  html,body{overscroll-behavior-y:none}
+  header .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-family:Fraunces,Georgia,serif;font-weight:700;font-size:clamp(30px,6vw,42px);line-height:1.08;margin:6px 0 8px}
+  h2{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:22px;margin:0 0 14px}
+  .sub{color:var(--muted);margin:0}
+  .sub a{color:var(--accent);font-weight:600;text-decoration:none}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:18px;box-shadow:var(--shadow)}
+
+  /* recipe */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .stat .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .stat .v{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:20px;margin-top:2px}
+  .stat .n{font-size:12px;color:var(--muted)}
+  .dose{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .dose label{font-size:13px;color:var(--muted);font-weight:500}
+  #doseRange{flex:1;min-width:160px;accent-color:var(--accent);height:28px;cursor:pointer}
+  #doseRange:disabled{opacity:.45;cursor:not-allowed}
+  .doseVal{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:18px;min-width:52px;text-align:right}
+  .reset30{border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 12px Inter,sans-serif;padding:6px 11px;border-radius:999px;cursor:pointer}
+  .reset30[hidden]{display:none}
+  .ratioRow{align-items:flex-start}
+  .ratioRow label{padding-top:8px;min-width:46px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+  .chips button{border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 13px "JetBrains Mono",monospace;padding:7px 11px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .chips button em{font:600 10px Inter,sans-serif;font-style:normal;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+  .chips button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chips button:disabled{opacity:.45;cursor:not-allowed}
+  .dose label{min-width:46px}
+  .note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+
+  /* checklist */
+  ol.prep{list-style:none;padding:0;margin:0;counter-reset:s}
+  ol.prep li{display:flex;gap:12px;align-items:flex-start;padding:12px 4px;border-top:1px solid var(--line);cursor:pointer;user-select:none}
+  ol.prep li:first-child{border-top:0}
+  .box{flex:0 0 24px;height:24px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;margin-top:1px;transition:.15s}
+  .box svg{opacity:0;transition:.15s}
+  li.done .box{background:var(--ok);border-color:var(--ok)}
+  li.done .box svg{opacity:1}
+  li.done .t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+  .t b{font-weight:600}
+  .t small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+
+  /* brew */
+  .brew{position:relative}
+  .clock{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:clamp(64px,18vw,104px);line-height:1;text-align:center;letter-spacing:-.02em;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+  .clock.over{color:var(--warn)}
+  .clocksub{text-align:center;color:var(--muted);font-size:13px;min-height:20px}
+  .now{margin-top:16px;border-radius:16px;background:var(--accent-soft);padding:18px;border:1px solid transparent}
+  .now .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+  .now .act{font-family:Fraunces,Georgia,serif;font-size:clamp(24px,5.4vw,32px);font-weight:700;line-height:1.15;margin:4px 0 6px}
+  .now .act .w{font-family:"JetBrains Mono",monospace;color:var(--accent)}
+  .now ul{margin:6px 0 0;padding-left:18px}
+  .now li{margin:3px 0}
+  .bar{height:6px;border-radius:99px;background:rgba(0,0,0,.08);overflow:hidden;margin-top:14px}
+  @media (prefers-color-scheme: dark){.bar{background:rgba(255,255,255,.1)}}
+  .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s linear}
+  .next{margin-top:10px;font-size:14px;color:var(--muted)}
+  .next b{color:var(--ink)}
+  .controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .btn{flex:1;min-width:120px;border:0;border-radius:14px;padding:15px 16px;font:700 16px Inter,sans-serif;cursor:pointer;transition:transform .05s}
+  .btn:active{transform:scale(.98)}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn.go{background:var(--ok);color:#fff}
+  .btn[hidden]{display:none}
+  .opts{display:flex;gap:16px;margin-top:12px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+  .opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+
+  /* timeline */
+  .tl{margin-top:22px;border-top:1px solid var(--line);padding-top:14px}
+  .tl .row{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:baseline;padding:9px 10px;border-radius:10px}
+  .tl .row .tm{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--muted);font-size:14px}
+  .tl .row .ds{font-size:14.5px}
+  .tl .row .wt{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:14px;color:var(--muted)}
+  .tl .row.active{background:var(--accent-soft)}
+  .tl .row.active .tm,.tl .row.active .wt{color:var(--accent)}
+  .tl .row.past{opacity:.5}
+
+  .done-msg{text-align:center;padding:8px 0 0}
+  .done-msg .big{font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:700}
+  .tips li{margin:6px 0}
+  footer{margin-top:26px;font-size:12.5px;color:var(--muted);text-align:center}
+  footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Pour-over brew guide · Hario V60</div>
+    <h1>The Ultimate V60 Technique</h1>
+    <p class="sub">Following James Hoffmann's method step by step — <a href="https://www.youtube.com/watch?v=AI4ynXzkSQo">watch the video ↗</a></p>
+  </header>
+
+  <!-- RECIPE -->
+  <section class="card">
+    <h2>The recipe</h2>
+    <div class="stats">
+      <div class="stat"><div class="k">Coffee</div><div class="v"><span data-dose>30</span> g</div><div class="n">medium-fine grind</div></div>
+      <div class="stat"><div class="k">Water</div><div class="v"><span data-water>500</span> g</div><div class="n">ratio <span data-ratio>1:16.7</span></div></div>
+      <div class="stat"><div class="k">Temp</div><div class="v">Hot</div><div class="n">just off the boil</div></div>
+      <div class="stat"><div class="k">Finish by</div><div class="v">3:30</div><div class="n">total brew time</div></div>
+    </div>
+    <div class="dose">
+      <label for="doseRange">Coffee</label>
+      <input type="range" id="doseRange" min="10" max="40" step="1" value="30" aria-label="Coffee dose in grams">
+      <span class="doseVal"><span data-dose>30</span> g</span>
+      <button class="reset30" id="reset30" type="button">Video: 30 g</button>
+    </div>
+    <div class="dose ratioRow">
+      <label>Ratio</label>
+      <div class="chips" id="ratioChips">
+        <button data-r="16">1:16</button>
+        <button data-r="16.5">1:16.5</button>
+        <button data-r="hoff" class="on">1:16.7<em>Hoffmann</em></button>
+        <button data-r="17">1:17</button>
+        <button data-r="17.5">1:17.5</button>
+        <button data-r="18">1:18</button>
+      </div>
+    </div>
+    <p class="note">The video brews 30 g to 500 g at 60 g per litre (≈1:16.7). Changing the dose or ratio recalculates the water, keeps the bloom at 2× the coffee and the first pour at 60% of the water. The clock times stay the video's.</p>
+  </section>
+
+  <!-- PREP -->
+  <section class="card">
+    <h2>Before you start</h2>
+    <ol class="prep" id="prep">
+      <li><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t"><b>Boil your water.</b><small>Hottest water you can — especially with lighter roasts.</small></span></li>
+      <li><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t"><b>Grind <span data-dose>30</span> g of coffee</b> medium-fine.</span></li>
+      <li><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t"><b>Rinse the paper filter</b> with water just off the boil.<small>Dump the rinse water from your server.</small></span></li>
+      <li><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t"><b>Add the grounds</b> to the V60.</span></li>
+      <li><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t"><b>Make a well</b> in the middle of the grounds.</span></li>
+      <li><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t"><b>Tare your scale</b> and have the kettle in hand.<small>Hit Start the moment you begin the bloom pour.</small></span></li>
+    </ol>
+  </section>
+
+  <!-- BREW -->
+  <section class="card brew" id="brew">
+    <h2>Brew</h2>
+    <div class="clock" id="clock">0:00</div>
+    <div class="clocksub" id="clocksub">Ready when you are</div>
+
+    <div class="now" id="now">
+      <div class="lab" id="nowLab">Up first</div>
+      <div class="act" id="nowAct">Bloom</div>
+      <ul id="nowList"></ul>
+      <div class="bar"><i id="bar"></i></div>
+    </div>
+    <div class="next" id="next"></div>
+
+    <div class="controls">
+      <button class="btn primary" id="startBtn">Start · pour bloom</button>
+      <button class="btn go" id="advBtn" hidden>Done — next step</button>
+      <button class="btn ghost" id="pauseBtn" hidden>Pause</button>
+      <button class="btn ghost" id="resetBtn" hidden>Reset</button>
+    </div>
+    <div class="opts">
+      <label><input type="checkbox" id="beepChk" checked> Chime at each step</label>
+      <label><input type="checkbox" id="wakeChk" checked> Keep screen awake</label>
+    </div>
+
+    <div class="tl" id="tl"></div>
+  </section>
+
+  <!-- TIPS -->
+  <section class="card">
+    <h2>Notes from the video</h2>
+    <ul class="tips">
+      <li><b>Swirl, don't stir, the bloom.</b> Swirling wets all the grounds more effectively than a spoon.</li>
+      <li><b>Keep the V60 fairly full</b> during the first main pour — it helps hold temperature.</li>
+      <li><b>Don't worry about pouring onto the paper.</b></li>
+      <li><b>Second pour is gentler.</b> A little slower than the first; don't pour aggressively.</li>
+      <li><b>The final swirl flattens the bed</b> so the coffee extracts evenly as it drains.</li>
+      <li><b>Drawdown speed</b> is affected by water temperature and your choice of filter paper.</li>
+    </ul>
+  </section>
+
+  <footer>Method: James Hoffmann, <a href="https://www.youtube.com/watch?v=AI4ynXzkSQo">“The Ultimate V60 Technique”</a> (2019).</footer>
+</div>
+
+<script>
+(function(){
+  // ---------- recipe scaling ----------
+  let dose = 30, ratio = 'hoff';
+  const RATIOS = ['16','16.5','hoff','17','17.5','18'];
+  const ratioNum = () => ratio==='hoff' ? 1000/60 : parseFloat(ratio);
+  const ratioLabel = () => ratio==='hoff' ? '1:16.7' : '1:'+ratio;
+  const water = () => Math.round(dose * ratioNum());
+  try{ const r = localStorage.getItem('v60ratio'); if(RATIOS.includes(r)) ratio = r; }catch(e){}
+  const bloom = () => dose * 2;
+  const sixty = () => Math.round(water() * 0.6);
+  try{ const s = parseInt(localStorage.getItem('v60dose')); if(s>=10 && s<=40) dose = s; }catch(e){}
+
+  // ---------- phases ----------
+  function phases(){
+    return [
+      { key:'bloom', start:0, end:45, at:'0:00', title:()=>`Bloom — pour to <span class="w">${bloom()} g</span>`,
+        short:()=>`Bloom: pour ${bloom()} g, swirl`, wt:()=>`${bloom()} g`,
+        steps:()=>[`Pour ${bloom()} g of water (2× the coffee) into the well.`,
+                   `Swirl the slurry until the grounds are evenly mixed.`,
+                   `Let it bloom — up to 45 seconds.`] },
+      { key:'p1', start:45, end:75, at:'0:45', title:()=>`Pour to <span class="w">${sixty()} g</span>`,
+        short:()=>`Main pour to ${sixty()} g (60%)`, wt:()=>`${sixty()} g`,
+        steps:()=>[`Add ${sixty()-bloom()} g over the next 30 seconds → ${sixty()} g total (60%).`,
+                   `Keep the V60 fairly full to hold temperature.`,
+                   `Don't worry about pouring onto the paper.`] },
+      { key:'p2', start:75, end:105, at:'1:15', title:()=>`Pour to <span class="w">${water()} g</span>`,
+        short:()=>`Gentler pour to ${water()} g (100%)`, wt:()=>`${water()} g`,
+        steps:()=>[`Add ${water()-sixty()} g over the next 30 seconds → ${water()} g total.`,
+                   `Pour a little slower than before — not aggressively.`] },
+      { key:'agitate', start:105, end:null, at:'1:45', title:()=>`Stir, then swirl`,
+        short:()=>`Stir once each way, drain a little, swirl`, wt:()=>'',
+        steps:()=>[`With a spoon, stir once clockwise and once counterclockwise.`,
+                   `Let the V60 drain a little.`,
+                   `Give it a gentle swirl to flatten the bed.`],
+        manual:'Swirled — start drawdown' },
+      { key:'draw', start:null, end:210, at:'→ 3:30', title:()=>`Let it draw down`,
+        short:()=>`Drawdown — aim to finish by 3:30`, wt:()=>'',
+        steps:()=>[`Hands off. Let the brew drain through.`,
+                   `Aim to be finished by 3:30.`],
+        manual:'Drawdown finished' }
+    ];
+  }
+
+  // ---------- elements ----------
+  const $ = id => document.getElementById(id);
+  const clock=$('clock'), clocksub=$('clocksub'), nowLab=$('nowLab'), nowAct=$('nowAct'), nowList=$('nowList'),
+        bar=$('bar'), next=$('next'), startBtn=$('startBtn'), advBtn=$('advBtn'), pauseBtn=$('pauseBtn'),
+        resetBtn=$('resetBtn'), tl=$('tl'), beepChk=$('beepChk'), wakeChk=$('wakeChk'),
+        doseRange=$('doseRange'), reset30=$('reset30');
+
+  // ---------- state ----------
+  let P = phases(), idx = 0, running=false, finished=false, t0=0, acc=0, raf=null, manualAt=null, finalT=null;
+  const elapsed = () => acc + (running ? (performance.now()-t0)/1000 : 0);
+  const fmt = s => { s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+
+  // ---------- audio ----------
+  let actx=null;
+  function chime(n=1){
+    if(!beepChk.checked || !actx) return;
+    try{
+      for(let i=0;i<n;i++){
+        const o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime+i*0.22;
+        o.type='sine'; o.frequency.value = 880;
+        g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.25,t+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+0.35);
+        o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.4);
+      }
+    }catch(e){}
+  }
+  // ---------- wake lock ----------
+  let lock=null;
+  async function wake(on){
+    try{
+      if(on && wakeChk.checked && 'wakeLock' in navigator && !lock){ lock = await navigator.wakeLock.request('screen'); lock.addEventListener('release',()=>lock=null); }
+      if(!on && lock){ await lock.release(); lock=null; }
+    }catch(e){ lock=null; }
+  }
+
+  // ---------- render ----------
+  function renderDose(){
+    document.querySelectorAll('[data-dose]').forEach(e=>e.textContent=dose);
+    document.querySelectorAll('[data-water]').forEach(e=>e.textContent=water());
+    doseRange.value = dose;
+    reset30.hidden = dose===30;
+    document.querySelectorAll('[data-ratio]').forEach(e=>e.textContent=ratioLabel());
+    document.querySelectorAll('#ratioChips button').forEach(b=>b.classList.toggle('on', b.dataset.r===ratio));
+    P = phases(); renderNow(); renderTL();
+  }
+
+  function renderTL(){
+    tl.innerHTML = P.map((p,i)=>`<div class="row ${i===idx && !finished && (running||acc>0)?'active':''} ${i<idx||finished?'past':''}">
+      <span class="tm">${p.at}</span><span class="ds">${p.short()}</span><span class="wt">${p.wt()}</span></div>`).join('');
+  }
+
+  function renderNow(){
+    if(finished){
+      nowLab.textContent='Done';
+      nowAct.innerHTML='Enjoy your coffee ☕';
+      const diff = finalT-210;
+      nowList.innerHTML = `<li>Total brew time: <b>${fmt(finalT)}</b> (target 3:30${Math.abs(diff)<5?' — right on':diff>0?`, ${fmt(diff)} over`:`, ${fmt(-diff)} under`}).</li>`;
+      bar.style.width='100%'; next.innerHTML='';
+      return;
+    }
+    const p = P[idx], started = running || acc>0;
+    nowLab.textContent = started ? `Now · step ${idx+1} of ${P.length}` : 'Up first';
+    nowAct.innerHTML = p.title();
+    nowList.innerHTML = p.steps().map(s=>`<li>${s}</li>`).join('');
+    const n = P[idx+1];
+    next.innerHTML = n ? `Next at <b>${n.at.replace('→ ','')}</b>: ${n.short()}` : '';
+  }
+
+  function updateClock(){
+    const e = elapsed();
+    clock.textContent = fmt(e);
+    clock.classList.toggle('over', !finished && e>210);
+    const p = P[idx];
+    // progress within phase
+    let pct = 0;
+    if(!finished){
+      const s = p.start ?? manualAt ?? e;
+      if(p.end!=null){ pct = Math.min(100, (e - s) / (p.end - s) * 100); }
+      else { pct = 100; }
+      if(p.end!=null && e < p.end){ clocksub.textContent = `${fmt(p.end - e)} left in this step`; }
+      else if(p.key==='agitate'){ clocksub.textContent = 'Tap the green button after the swirl'; }
+      else if(p.key==='draw'){ clocksub.textContent = e>210 ? 'Past 3:30 — tap when drained' : 'Tap when drained'; }
+    }
+    bar.style.width = (finished?100:Math.max(0,pct)) + '%';
+  }
+
+  function setButtons(){
+    const started = running || acc>0;
+    doseRange.disabled = started && !finished;
+    reset30.disabled = started && !finished;
+    document.querySelectorAll('#ratioChips button').forEach(b=>b.disabled = started && !finished);
+    startBtn.hidden = started && !finished ? true : false;
+    startBtn.textContent = finished ? 'Brew again' : 'Start · pour bloom';
+    pauseBtn.hidden = !started || finished;
+    pauseBtn.textContent = running ? 'Pause' : 'Resume';
+    resetBtn.hidden = !started && !finished;
+    const p = P[idx];
+    advBtn.hidden = finished || !started || !p.manual;
+    if(p.manual) advBtn.textContent = p.manual;
+  }
+
+  function advance(){
+    if(idx < P.length-1){
+      idx++;
+      if(P[idx].start==null) manualAt = elapsed();
+      chime(P[idx].key==='draw'?1:2);
+    } else {
+      finished = true; finalT = elapsed(); running=false; acc=finalT; cancelAnimationFrame(raf); wake(false); chime(3);
+    }
+    renderNow(); renderTL(); setButtons(); updateClock();
+  }
+
+  function loop(){
+    const e = elapsed(), p = P[idx];
+    if(p.end!=null && !p.manual && e >= p.end) advance();
+    updateClock();
+    if(running) raf = requestAnimationFrame(loop);
+  }
+
+  function reset(){
+    running=false; finished=false; acc=0; idx=0; manualAt=null; finalT=null;
+    cancelAnimationFrame(raf); wake(false);
+    clock.textContent='0:00'; clock.classList.remove('over'); clocksub.textContent='Ready when you are'; bar.style.width='0%';
+    renderNow(); renderTL(); setButtons();
+  }
+
+  // ---------- events ----------
+  startBtn.addEventListener('click', ()=>{
+    if(finished) reset();
+    try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume && actx.resume(); }catch(e){}
+    running=true; t0=performance.now(); wake(true);
+    renderNow(); renderTL(); setButtons(); chime(1); loop();
+  });
+  pauseBtn.addEventListener('click', ()=>{
+    if(running){ acc = elapsed(); running=false; cancelAnimationFrame(raf); wake(false); }
+    else { running=true; t0=performance.now(); wake(true); loop(); }
+    setButtons();
+  });
+  resetBtn.addEventListener('click', reset);
+  advBtn.addEventListener('click', advance);
+  wakeChk.addEventListener('change', ()=>wake(running && wakeChk.checked));
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && running) wake(true); });
+
+  document.querySelectorAll('#prep li').forEach(li=>li.addEventListener('click',()=>li.classList.toggle('done')));
+  function setDose(d){
+    if(running || (acc>0 && !finished)) { doseRange.value = dose; return; } // don't rescale mid-brew
+    dose = Math.round(d); try{ localStorage.setItem('v60dose', dose); }catch(e){}
+    renderDose();
+  }
+  doseRange.addEventListener('input', ()=>setDose(+doseRange.value));
+  reset30.addEventListener('click', ()=>setDose(30));
+  document.querySelectorAll('#ratioChips button').forEach(b=>b.addEventListener('click', ()=>{
+    if(running || (acc>0 && !finished)) return;
+    ratio = b.dataset.r; try{ localStorage.setItem('v60ratio', ratio); }catch(e){}
+    renderDose();
+  }));
+
+  renderDose(); setButtons();
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>
