@@ -1,5 +1,5 @@
 // V60 Brew Guide — offline support
-const CACHE = 'v60-v2';
+const CACHE = 'v60-v3';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
