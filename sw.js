@@ -1,9 +1,9 @@
 // V60 Brew Guide — offline support
 // Online: always fetch the newest app files from the network (and refresh the saved copy).
 // Offline: fall back to the saved copy.
-const CACHE = 'v60-v4';
+const CACHE = 'v60-v5';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest',
-  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
+  'icons/icon-192-v2.png', 'icons/icon-512-v2.png', 'icons/apple-touch-icon-v2.png'];
 
 self.addEventListener('install', e => {
   // cache: 'reload' skips the browser's HTTP cache so we never save a stale copy
