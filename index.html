@@ -284,6 +284,7 @@
   const elapsed = () => acc + (running ? (performance.now()-t0)/1000 : 0);
   const fmt = s => { s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
   const midBrew = () => running || (acc>0 && !finished);
+  window.__v60Busy = midBrew;
 
   // ---------- audio ----------
   let actx=null;
@@ -399,6 +400,7 @@
     cancelAnimationFrame(raf); wake(false);
     clock.classList.remove('over'); bar.style.width='0%';
     renderNow(); renderTL(); setButtons(); updateClock();
+    window.__v60Idle && window.__v60Idle();
   }
 
   // ---------- events ----------
@@ -442,8 +444,25 @@
 })();
 </script>
 <script>
+  // Keep the installed app up to date: check for a new version on launch and whenever
+  // the app comes back to the foreground; switch to it once it's ready (never mid-brew).
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloading = false, pending = false;
+    const reloadIfIdle = () => {
+      if (reloading) return;
+      if (window.__v60Busy && window.__v60Busy()) { pending = true; return; }
+      reloading = true; location.reload();
+    };
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController) reloadIfIdle(); });
+    window.__v60Idle = () => { if (pending) reloadIfIdle(); };
+    window.addEventListener('load', async () => {
+      try {
+        const reg = await navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' });
+        reg.update();
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update(); });
+      } catch (e) {}
+    });
   }
 </script>
 </body>
