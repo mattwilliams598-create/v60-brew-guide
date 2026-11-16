@@ -2,7 +2,7 @@
 
 James Hoffmann's **Ultimate V60 Technique** ([video](https://www.youtube.com/watch?v=AI4ynXzkSQo)) as a step-by-step brew guide with a built-in timer — installable on your phone like an app.
 
-- Dose slider (10–40 g, 1 g steps) and ratio picker (1:16 → 1:18, Hoffmann's 60 g/L default)
+- Dose slider (10–40 g, 1 g steps) and ratio picker (1:16, Hoffmann's 60 g/L, 1:17, 1:18)
 - Live timer with pour targets, chimes at each step, keeps the screen awake
 - Works offline once installed
 
