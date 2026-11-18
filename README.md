@@ -1,6 +1,10 @@
 # V60 Brew Guide
 
-James Hoffmann's **Ultimate V60 Technique** ([video](https://www.youtube.com/watch?v=AI4ynXzkSQo)) as a step-by-step brew guide with a built-in timer — installable on your phone like an app.
+James Hoffmann's V60 techniques as a step-by-step brew guide with a built-in timer — installable on your phone like an app.
+
+- **1 Cup method** (default up to 20 g): [A Better 1 Cup V60 Technique](https://www.youtube.com/watch?v=1oB1oDrDkHM) — 15 g : 250 g, 50 g bloom, four 50 g pulses, ~3:00
+- **Ultimate method** (default above 20 g): [The Ultimate V60 Technique](https://www.youtube.com/watch?v=AI4ynXzkSQo) — 30 g : 500 g, ~3:30
+- Either method can be picked manually under **Adjust**
 
 - Dose slider (10–40 g, 1 g steps) and ratio picker (1:16, Hoffmann's 60 g/L, 1:17, 1:18)
 - Live timer with pour targets, chimes at each step, keeps the screen awake

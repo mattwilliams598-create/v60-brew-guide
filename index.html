@@ -65,12 +65,11 @@
   .doseVal{font-family:var(--mono);font-weight:500;font-size:18px;width:56px;text-align:right;flex:none}
   .chips{display:grid;grid-template-columns:repeat(4,1fr);flex:1;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
   .chips button{border:0;background:transparent;font-family:var(--mono);font-weight:500;font-size:14px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:48px}
+  .chips.two{grid-template-columns:repeat(2,1fr)}
   .chips button + button{border-left:1.5px solid var(--ink)}
   .chips button em{font-family:var(--sans);font-style:normal;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
   .chips button.on{background:var(--ink);color:var(--paper)}
   .chips button:disabled{opacity:.4;cursor:not-allowed}
-  .reset30{border:0;background:none;padding:0;font-size:13px;font-weight:600;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-  .reset30[hidden]{display:none}
   .opts{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:var(--ink);margin-top:14px}
   .opts label{display:flex;gap:8px;align-items:center;cursor:pointer;min-height:32px}
   .opts input{accent-color:var(--ink);width:18px;height:18px}
@@ -81,6 +80,7 @@
   .clock{font-family:var(--mono);font-weight:400;font-size:clamp(80px,25vw,116px);line-height:.95;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
   .clocksub{font-size:16px;color:var(--muted);margin-top:8px;min-height:24px}
   .clocksub b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:-.02em}
+  .clocksub b.plain{font-family:inherit;font-size:inherit;letter-spacing:0}
   .clocksub.over b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
   .bar{height:5px;background:var(--wash);margin-top:12px;overflow:hidden;border-radius:1px}
   .bar i{display:block;height:100%;width:0;background:var(--ink);transition:width .2s linear}
@@ -155,16 +155,30 @@
     <div><div class="k">Coffee</div><div class="v"><span data-dose>30</span><span class="u">g</span></div></div>
     <div><div class="k">Water</div><div class="v"><span data-water>500</span><span class="u">g</span></div></div>
     <div><div class="k">Ratio</div><div class="v" data-ratio>1:16.7</div></div>
-    <div><div class="k">Finish</div><div class="v">3:30</div></div>
+    <div><div class="k">Finish</div><div class="v" data-target>3:30</div></div>
   </div>
 
   <details class="adjust" id="adjust">
-    <summary><span>Medium-fine grind · just off the boil</span><span class="act-link">Adjust <span class="plus" aria-hidden="true">+</span></span></summary>
+    <summary><span><b id="methodName" style="color:var(--ink);font-weight:600">Ultimate</b> · medium-fine grind</span><span class="act-link">Adjust <span class="plus" aria-hidden="true">+</span></span></summary>
     <div class="adjust-body">
       <div class="row">
         <label for="doseRange">Coffee</label>
         <input type="range" id="doseRange" min="10" max="40" step="1" value="30" aria-label="Coffee dose in grams">
         <span class="doseVal"><span data-dose>30</span> g</span>
+      </div>
+      <div class="row">
+        <label>Quick</label>
+        <div class="chips two" id="presetChips">
+          <button data-p="15">1 cup<em>15 g</em></button>
+          <button data-p="30">2 cups<em>30 g</em></button>
+        </div>
+      </div>
+      <div class="row">
+        <label>Method</label>
+        <div class="chips two" id="methodChips">
+          <button data-m="one">1 Cup<em data-auto="one"></em></button>
+          <button data-m="ult">Ultimate<em data-auto="ult"></em></button>
+        </div>
       </div>
       <div class="row">
         <label>Ratio</label>
@@ -175,7 +189,7 @@
           <button data-r="18">1:18</button>
         </div>
       </div>
-      <p class="fine">The video brews 30 g to 500 g at 60 g per litre. Other settings keep the bloom at 2× the coffee and the first pour at 60% of the water; the clock times stay the video's. <button class="reset30" id="reset30" type="button">Back to 30 g</button></p>
+      <p class="fine" id="methodNote"></p>
       <div class="opts">
         <label><input type="checkbox" id="beepChk" checked> Chime at each step</label>
         <label><input type="checkbox" id="wakeChk" checked> Keep screen awake</label>
@@ -204,7 +218,7 @@
       <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
         <span class="t">Grind <span data-dose>30</span> g of coffee, medium-fine.</span></li>
       <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="t">Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small></span></li>
+        <span class="t" id="prepRinse">Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small></span></li>
       <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
         <span class="t">Add the grounds to the V60.</span></li>
       <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
@@ -216,17 +230,10 @@
 
   <details class="fold">
     <summary><h2>Notes from the video</h2><span class="plus">+</span></summary>
-    <ul class="tips">
-      <li><b>Swirl, don't stir, the bloom.</b> Swirling wets all the grounds more effectively than a spoon.</li>
-      <li><b>Keep the V60 fairly full</b> during the first main pour — it helps hold temperature.</li>
-      <li><b>Don't worry about pouring onto the paper.</b></li>
-      <li><b>The second pour is gentler.</b> A little slower than the first; not aggressive.</li>
-      <li><b>The final swirl flattens the bed</b> so the coffee extracts evenly as it drains.</li>
-      <li><b>Drawdown speed</b> depends on water temperature and your filter paper.</li>
-    </ul>
+    <ul class="tips" id="tips"></ul>
   </details>
 
-  <footer>Method: James Hoffmann, <a href="https://www.youtube.com/watch?v=AI4ynXzkSQo">The Ultimate V60 Technique</a> (2019).</footer>
+  <footer id="credit"></footer>
 </div>
 
 <nav class="dock">
@@ -241,60 +248,117 @@
 <script>
 (function(){
   // ---------- recipe scaling ----------
-  let dose = 30, ratio = 'hoff';
+  let dose = 30, ratio = 'hoff', methodOverride = null;
   const RATIOS = ['16','hoff','17','18'];
   const ratioNum = () => ratio==='hoff' ? 1000/60 : parseFloat(ratio);
   const ratioLabel = () => ratio==='hoff' ? '1:16.7' : '1:'+ratio;
   const water = () => Math.round(dose * ratioNum());
-  const bloom = () => dose * 2;
-  const sixty = () => Math.round(water() * 0.6);
+  const pct = f => Math.round(water() * f);
   const g = n => `${n}<span class="u">g</span>`;
+  const big = n => `<span class="w">${g(n)}</span>`;
   try{ const r = localStorage.getItem('v60ratio'); if(RATIOS.includes(r)) ratio = r; }catch(e){}
   try{ const s = parseInt(localStorage.getItem('v60dose')); if(s>=10 && s<=40) dose = s; }catch(e){}
 
-  // ---------- phases ----------
-  function phases(){
-    return [
-      { key:'bloom', start:0, end:45, at:'0:00', title:()=>`Bloom to <span class="w">${g(bloom())}</span>`,
-        short:()=>`Bloom, swirl`, wt:()=>g(bloom()),
-        steps:()=>[`Pour ${bloom()} g (2× the coffee) into the well.`,
-                   `Swirl until the grounds are evenly mixed.`,
-                   `Let it bloom — up to 45 seconds.`] },
-      { key:'p1', start:45, end:75, at:'0:45', title:()=>`Pour to <span class="w">${g(sixty())}</span>`,
-        short:()=>`Main pour (60%)`, wt:()=>g(sixty()),
-        steps:()=>[`Add ${sixty()-bloom()} g over 30 seconds.`,
-                   `Keep the V60 fairly full to hold temperature.`,
-                   `Don't worry about pouring onto the paper.`] },
-      { key:'p2', start:75, end:105, at:'1:15', title:()=>`Pour to <span class="w">${g(water())}</span>`,
-        short:()=>`Gentler pour (100%)`, wt:()=>g(water()),
-        steps:()=>[`Add ${water()-sixty()} g over 30 seconds.`,
-                   `A little slower than before — not aggressive.`] },
-      { key:'agitate', start:105, end:null, at:'1:45', title:()=>`Stir, then swirl`,
-        short:()=>`Stir each way, swirl`, wt:()=>'',
-        steps:()=>[`Stir once clockwise, once counterclockwise.`,
-                   `Let it drain a little.`,
-                   `Give it a gentle swirl to flatten the bed.`],
-        manual:'Swirled' },
-      { key:'draw', start:null, end:210, at:'3:30', title:()=>`Draw down`,
-        short:()=>`Drawdown`, wt:()=>'',
-        steps:()=>[`Hands off. Let it drain through.`,
-                   `Aim to be finished by 3:30.`],
-        manual:'Done draining' }
-    ];
-  }
+  // ---------- methods ----------
+  // <= 20 g uses the 1 Cup technique by default; more uses the Ultimate technique.
+  const autoMethod = () => dose <= 20 ? 'one' : 'ult';
+  const method = () => methodOverride || autoMethod();
+
+  const METHODS = {
+    ult: {
+      name:'Ultimate', title:'The Ultimate V60 Technique', year:2019, target:210,
+      video:'https://www.youtube.com/watch?v=AI4ynXzkSQo',
+      note:'The video brews 30 g to 500 g at 60 g per litre. Other settings keep the bloom at 2× the coffee and the first pour at 60% of the water; the clock times stay the video’s.',
+      rinse:'Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small>',
+      tips:[
+        ['Swirl, don’t stir, the bloom.','Swirling wets all the grounds more effectively than a spoon.'],
+        ['Keep the V60 fairly full','during the first main pour — it helps hold temperature.'],
+        ['Don’t worry about pouring onto the paper.',''],
+        ['The second pour is gentler.','A little slower than the first; not aggressive.'],
+        ['The final swirl flattens the bed','so the coffee extracts evenly as it drains.'],
+        ['Drawdown speed','depends on water temperature and your filter paper.'] ],
+      phases(){
+        const bloom = dose*2, sixty = pct(.6), all = water();
+        return [
+          { key:'bloom', row:0, start:0, end:45, at:'0:00', ch:2, title:()=>`Bloom to ${big(bloom)}`,
+            short:'Bloom, swirl', wt:bloom,
+            steps:[`Pour ${bloom} g (2× the coffee) into the well.`, `Swirl until the grounds are evenly mixed.`, `Let it bloom — up to 45 seconds.`] },
+          { key:'p1', row:1, start:45, end:75, at:'0:45', ch:2, title:()=>`Pour to ${big(sixty)}`,
+            short:'Main pour (60%)', wt:sixty,
+            steps:[`Add ${sixty-bloom} g over 30 seconds.`, `Keep the V60 fairly full to hold temperature.`, `Don’t worry about pouring onto the paper.`] },
+          { key:'p2', row:2, start:75, end:105, at:'1:15', ch:2, title:()=>`Pour to ${big(all)}`,
+            short:'Gentler pour (100%)', wt:all,
+            steps:[`Add ${all-sixty} g over 30 seconds.`, `A little slower than before — not aggressive.`] },
+          { key:'agitate', row:3, start:105, end:null, at:'1:45', ch:2, title:()=>`Stir, then swirl`,
+            short:'Stir each way, swirl',
+            steps:[`Stir once clockwise, once counterclockwise.`, `Let it drain a little.`, `Give it a gentle swirl to flatten the bed.`],
+            manual:'Swirled', wait:'Tap <b class="plain">Swirled</b> when done' },
+          { key:'draw', row:4, start:null, end:210, at:'3:30', ch:1, title:()=>`Draw down`,
+            short:'Drawdown',
+            steps:[`Hands off. Let it drain through.`, `Aim to be finished by 3:30.`],
+            manual:'Done draining' }
+        ];
+      }
+    },
+    one: {
+      name:'1 Cup', title:'A Better 1 Cup V60 Technique', year:2022, target:180,
+      video:'https://www.youtube.com/watch?v=1oB1oDrDkHM',
+      note:'The video brews 15 g to 250 g at 60 g per litre: a 50 g bloom, then four 50 g pours. Other settings scale the pours to 20/40/60/80/100% of the water; the clock times stay the video’s.',
+      rinse:'Rinse the filter and preheat the V60.<small>Doing it over the sink slows the water down, so it heats the cone with less water.</small>',
+      tips:[
+        ['Grind medium-fine','— use soft, filtered water, freshly boiled for lighter roasts.'],
+        ['Preheat well.','Small brews lose heat fast; a plastic 1-cup V60 holds heat better than ceramic or glass.'],
+        ['Swirl gently','after the bloom pour, and once more after the last pour.'],
+        ['Short pulses with pauses','— add 50 g at a time, letting it drain a little in between.'],
+        ['Aim for about 3:00 total,','but drawdown varies. Taste matters most.'] ],
+      phases(){
+        const b = pct(.2), p2 = pct(.4), p3 = pct(.6), p4 = pct(.8), all = water();
+        const pour = (key,row,start,end,at,from,to,by) => ({ key, row, start, end, at, ch:2,
+          title:()=>`Pour to ${big(to)}`, short:`Pour (${Math.round(to/all*100)}%)`, wt:to,
+          steps:[`Add ${to-from} g, finishing by ${by}.`, `Pour gently in small circles.`] });
+        const pause = (key,row,start,end,nextAt,nextTo) => ({ key, row, start, end, ch:1, pause:true,
+          title:()=>`Pause`, short:'Pause', left:'until the next pour',
+          steps:[`Let it drain a little before the next pour.`] });
+        return [
+          { key:'bloom', row:0, start:0, end:10, at:'0:00', ch:2, title:()=>`Bloom to ${big(b)}`,
+            short:'Bloom, gentle swirl', wt:b,
+            steps:[`Pour ${b} g into the well.`, `At 0:10, give it a gentle swirl.`] },
+          { key:'bswirl', row:0, start:10, end:45, ch:1, title:()=>`Gently swirl`,
+            short:'Gentle swirl', left:'until the first pour',
+            steps:[`Give the V60 a gentle swirl.`, `Then let it bloom until 0:45.`] },
+          pour('p1',1,45,60,'0:45',b,p2,'1:00'),
+          pause('w1',1,60,70,'1:10',p3),
+          pour('p2',2,70,80,'1:10',p2,p3,'1:20'),
+          pause('w2',2,80,90,'1:30',p4),
+          pour('p3',3,90,100,'1:30',p3,p4,'1:40'),
+          pause('w3',3,100,110,'1:50',all),
+          pour('p4',4,110,120,'1:50',p4,all,'2:00'),
+          { key:'swirl', row:5, start:120, end:125, at:'2:00', ch:2, title:()=>`Gentle swirl`,
+            short:'Gentle swirl',
+            steps:[`One gentle swirl to flatten the bed.`] },
+          { key:'draw', row:6, start:125, end:180, at:'3:00', ch:1, title:()=>`Draw down`,
+            short:'Drawdown',
+            steps:[`Hands off. Let it drain through.`, `It should finish around 3:00.`],
+            manual:'Done draining' }
+        ];
+      }
+    }
+  };
+  const M = () => METHODS[method()];
 
   // ---------- elements ----------
   const $ = id => document.getElementById(id);
   const clock=$('clock'), clocksub=$('clocksub'), nowLab=$('nowLab'), nowAct=$('nowAct'), nowList=$('nowList'),
         bar=$('bar'), next=$('next'), startBtn=$('startBtn'), advBtn=$('advBtn'), pauseBtn=$('pauseBtn'),
         resetBtn=$('resetBtn'), tl=$('tl'), beepChk=$('beepChk'), wakeChk=$('wakeChk'),
-        doseRange=$('doseRange'), reset30=$('reset30'), prepMeta=$('prepMeta');
+        doseRange=$('doseRange'), prepMeta=$('prepMeta');
 
   // ---------- state ----------
-  let P = phases(), idx = 0, running=false, finished=false, t0=0, acc=0, raf=null, manualAt=null, finalT=null;
+  let P = M().phases(), idx = 0, running=false, finished=false, t0=0, acc=0, raf=null, manualAt=null, finalT=null;
   const elapsed = () => acc + (running ? (performance.now()-t0)/1000 : 0);
   const fmt = s => { s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
   const midBrew = () => running || (acc>0 && !finished);
+  const rows = () => P.filter(p=>p.at);
   window.__v60Busy = midBrew;
 
   // ---------- audio ----------
@@ -303,11 +367,11 @@
     if(!beepChk.checked || !actx) return;
     try{
       for(let i=0;i<n;i++){
-        const o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime+i*0.22;
+        const o=actx.createOscillator(), gn=actx.createGain(), t=actx.currentTime+i*0.22;
         o.type='sine'; o.frequency.value = 880;
-        g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.25,t+0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001,t+0.35);
-        o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.4);
+        gn.gain.setValueAtTime(0.0001,t); gn.gain.exponentialRampToValueAtTime(0.25,t+0.02);
+        gn.gain.exponentialRampToValueAtTime(0.0001,t+0.35);
+        o.connect(gn).connect(actx.destination); o.start(t); o.stop(t+0.4);
       }
     }catch(e){}
   }
@@ -321,60 +385,77 @@
   }
 
   // ---------- render ----------
-  function renderDose(){
+  function renderSettings(){
+    const m = M();
     document.querySelectorAll('[data-dose]').forEach(e=>e.textContent=dose);
     document.querySelectorAll('[data-water]').forEach(e=>e.textContent=water());
     document.querySelectorAll('[data-ratio]').forEach(e=>e.textContent=ratioLabel());
+    document.querySelectorAll('[data-target]').forEach(e=>e.textContent=fmt(m.target));
     document.querySelectorAll('#ratioChips button').forEach(b=>b.classList.toggle('on', b.dataset.r===ratio));
+    document.querySelectorAll('#methodChips button').forEach(b=>b.classList.toggle('on', b.dataset.m===method()));
+    document.querySelectorAll('#presetChips button').forEach(b=>b.classList.toggle('on', +b.dataset.p===dose));
+    document.querySelectorAll('[data-auto]').forEach(e=>e.textContent = e.dataset.auto===autoMethod() ? (e.dataset.auto==='one'?'auto · ≤20 g':'auto · >20 g') : '');
+    $('methodName').textContent = m.name + ' method';
+    $('methodNote').textContent = m.note;
+    $('prepRinse').innerHTML = m.rinse;
+    $('tips').innerHTML = m.tips.map(([b,t])=>`<li><b>${b}</b> ${t}</li>`).join('');
+    $('credit').innerHTML = `Method: James Hoffmann, <a href="${m.video}">${m.title}</a> (${m.year}).`;
     doseRange.value = dose;
-    reset30.hidden = dose===30;
-    P = phases(); renderNow(); renderTL();
+    P = m.phases(); renderNow(); renderTL(); updateClock();
   }
 
   function renderTL(){
-    const started = running || acc>0;
-    tl.innerHTML = P.map((p,i)=>`<div class="r ${started && !finished && i===idx?'active':''} ${started && (i<idx||finished)?'past':''}">
-      <span class="mk"></span><span class="tm">${p.at}</span><span>${p.short()}</span><span class="wt">${p.wt()}</span></div>`).join('');
+    const started = running || acc>0, cur = P[idx].row;
+    tl.innerHTML = rows().map(p=>`<div class="r ${started && !finished && p.row===cur?'active':''} ${started && (p.row<cur||finished)?'past':''}">
+      <span class="mk"></span><span class="tm">${p.at}</span><span>${p.short}</span><span class="wt">${p.wt?g(p.wt):''}</span></div>`).join('');
+  }
+
+  function nextCue(){
+    let n = P[idx+1];
+    if(n && n.pause) n = P[idx+2];
+    if(!n) return '';
+    const when = n.start!=null ? fmt(n.start) : n.at;
+    return `Next — <b>${when}</b> ${n.short.toLowerCase()}${n.wt?` to ${n.wt} g`:''}`;
   }
 
   function renderNow(){
+    const target = M().target;
     if(finished){
       nowLab.textContent='Done';
       nowAct.innerHTML='Enjoy your coffee.';
-      const diff = finalT-210;
-      nowList.innerHTML = `<li>Total time ${fmt(finalT)} — target 3:30${Math.abs(diff)<5?', right on':diff>0?`, ${fmt(diff)} over`:`, ${fmt(-diff)} under`}.</li>`;
+      const diff = finalT-target;
+      nowList.innerHTML = `<li>Total time ${fmt(finalT)} — target ${fmt(target)}${Math.abs(diff)<5?', right on':diff>0?`, ${fmt(diff)} over`:`, ${fmt(-diff)} under`}.</li>`;
       bar.style.width='100%'; next.innerHTML='';
       return;
     }
     const p = P[idx], started = running || acc>0;
-    nowLab.textContent = started ? `Step ${idx+1} of ${P.length}` : 'Up first';
+    nowLab.textContent = started ? (p.pause ? 'Between pours' : `Step ${p.row+1} of ${rows().length}`) : `Up first · ${M().name} method`;
     nowAct.innerHTML = p.title();
-    nowList.innerHTML = p.steps().map(s=>`<li>${s}</li>`).join('');
-    const n = P[idx+1];
-    next.innerHTML = n ? `Next — <b>${n.at}</b> ${n.short().toLowerCase()}${n.wt()?' to '+n.wt().replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim():''}` : '';
+    nowList.innerHTML = p.steps.map(s=>`<li>${s}</li>`).join('');
+    next.innerHTML = nextCue();
   }
 
   function updateClock(){
-    const e = elapsed();
+    const e = elapsed(), target = M().target;
     clock.textContent = fmt(e);
-    clocksub.classList.toggle('over', !finished && e>210 && P[idx].key==='draw');
     let pct = 0;
     if(!finished){
       const p = P[idx], s = p.start ?? manualAt ?? e;
+      clocksub.classList.toggle('over', p.key==='draw' && e>target);
       if(p.end!=null){ pct = Math.min(100, (e - s) / Math.max(1,(p.end - s)) * 100); } else { pct = 100; }
       if(!running && acc===0){ clocksub.textContent = 'Ready when you are'; }
-      else if(p.end!=null && e < p.end){ clocksub.innerHTML = `<b>${fmt(p.end - e)}</b> left in this step`; }
-      else if(p.key==='agitate'){ clocksub.innerHTML = 'Tap <b style="font-family:inherit;font-size:inherit">Swirled</b> when done'; }
-      else if(p.key==='draw'){ clocksub.innerHTML = e>210 ? `<b>+${fmt(e-210)}</b> past 3:30 target` : `<b>${fmt(210-e)}</b> to the 3:30 target`; }
+      else if(p.key==='draw'){ clocksub.innerHTML = e>target ? `<b>+${fmt(e-target)}</b> past ${fmt(target)} target` : `<b>${fmt(target-e)}</b> to the ${fmt(target)} target`; }
+      else if(p.end!=null && e < p.end){ clocksub.innerHTML = `<b>${fmt(p.end - e)}</b> ${p.left || 'left in this step'}`; }
+      else if(p.wait){ clocksub.innerHTML = p.wait; }
       if(!running && acc>0) clocksub.textContent = 'Paused';
-    }
+    } else { clocksub.classList.remove('over'); }
     bar.style.width = (finished?100:Math.max(0,pct)) + '%';
   }
 
   function setButtons(){
     const started = running || acc>0, mid = midBrew();
-    doseRange.disabled = mid; reset30.disabled = mid;
-    document.querySelectorAll('#ratioChips button').forEach(b=>b.disabled = mid);
+    doseRange.disabled = mid;
+    document.querySelectorAll('#ratioChips button, #methodChips button, #presetChips button').forEach(b=>b.disabled = mid);
     const p = P[idx];
     const showAdv = mid && !!p.manual;
     startBtn.hidden = mid;
@@ -392,7 +473,7 @@
     if(idx < P.length-1){
       idx++;
       if(P[idx].start==null) manualAt = elapsed();
-      chime(P[idx].key==='draw'?1:2);
+      chime(P[idx].ch || 2);
     } else {
       finished = true; finalT = elapsed(); running=false; acc=finalT; cancelAnimationFrame(raf); wake(false); chime(3);
     }
@@ -400,8 +481,8 @@
   }
 
   function loop(){
-    const e = elapsed(), p = P[idx];
-    if(p.end!=null && !p.manual && e >= p.end) advance();
+    let e = elapsed(), p = P[idx];
+    while(p.end!=null && !p.manual && e >= p.end && idx < P.length-1){ advance(); p = P[idx]; }
     updateClock();
     if(running) raf = requestAnimationFrame(loop);
   }
@@ -440,18 +521,26 @@
 
   function setDose(d){
     if(midBrew()) { doseRange.value = dose; return; }
-    dose = Math.round(d); try{ localStorage.setItem('v60dose', dose); }catch(e){}
-    renderDose();
+    if(finished) reset();
+    dose = Math.round(d); methodOverride = null;   // a new dose picks the method automatically again
+    try{ localStorage.setItem('v60dose', dose); }catch(e){}
+    renderSettings();
   }
   doseRange.addEventListener('input', ()=>setDose(+doseRange.value));
-  reset30.addEventListener('click', ()=>setDose(30));
+  document.querySelectorAll('#presetChips button').forEach(b=>b.addEventListener('click', ()=>setDose(+b.dataset.p)));
+  document.querySelectorAll('#methodChips button').forEach(b=>b.addEventListener('click', ()=>{
+    if(midBrew()) return;
+    if(finished) reset();
+    methodOverride = b.dataset.m === autoMethod() ? null : b.dataset.m;
+    renderSettings(); setButtons();
+  }));
   document.querySelectorAll('#ratioChips button').forEach(b=>b.addEventListener('click', ()=>{
     if(midBrew()) return;
     ratio = b.dataset.r; try{ localStorage.setItem('v60ratio', ratio); }catch(e){}
-    renderDose();
+    renderSettings();
   }));
 
-  renderDose(); setButtons(); updateClock();
+  renderSettings(); setButtons(); updateClock();
 })();
 </script>
 <script>
