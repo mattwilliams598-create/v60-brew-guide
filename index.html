@@ -78,26 +78,26 @@
   .fine{font-size:13px;color:var(--muted);margin:12px 0 0;line-height:1.5}
 
   /* brew */
-  .brew{padding:18px 0 4px}
-  .clock{font-family:var(--mono);font-weight:400;font-size:clamp(84px,26vw,120px);line-height:.95;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
-  .clocksub{font-size:16px;color:var(--muted);margin-top:8px;min-height:24px}
+  .brew{padding:12px 0 4px}
+  .clock{font-family:var(--mono);font-weight:400;font-size:clamp(72px,23vw,108px);line-height:.92;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+  .clocksub{font-size:16px;color:var(--muted);margin-top:4px;min-height:24px}
   .clocksub b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:-.02em}
   .clocksub b.plain{font-family:inherit;font-size:inherit;letter-spacing:0}
   .clocksub.over b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
-  .bar{height:5px;background:var(--wash);margin-top:12px;overflow:hidden;border-radius:1px}
+  .bar{height:5px;background:var(--wash);margin-top:8px;overflow:hidden;border-radius:1px}
   .bar i{display:block;height:100%;width:0;background:var(--ink);transition:width .2s linear}
-  .now{margin-top:16px;padding:14px 16px 16px;background:var(--wash);border-left:4px solid var(--ink)}
-  .now .act{font-family:var(--serif);font-size:clamp(26px,7.4vw,32px);font-weight:500;line-height:1.1;margin:4px 0 10px;letter-spacing:-.01em}
+  .now{margin-top:12px;padding:10px 14px 12px;background:var(--wash);border-left:4px solid var(--ink)}
+  .now .act{font-family:var(--serif);font-size:clamp(26px,7.4vw,32px);font-weight:500;line-height:1.1;margin:2px 0 6px;letter-spacing:-.01em}
   .now .act .w{font-family:var(--mono);font-weight:500;font-size:1.3em;letter-spacing:-.02em;white-space:nowrap}
   .now ul{margin:0;padding:0;list-style:none}
-  .now li{position:relative;padding-left:18px;margin:6px 0;font-size:16px;line-height:1.45}
+  .now li{position:relative;padding-left:18px;margin:3px 0;font-size:16px;line-height:1.4}
   .now li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--ink)}
-  .next{margin-top:12px;font-size:15px;color:var(--muted)}
+  .next{margin-top:8px;font-size:15px;color:var(--muted)}
   .next b{color:var(--ink);font-weight:600}
 
   /* timeline */
-  .tl{margin-top:20px;border-top:2px solid var(--ink)}
-  .tl .r{display:grid;grid-template-columns:22px 52px 1fr auto;gap:8px;align-items:baseline;padding:12px 8px 12px 4px;border-bottom:1px solid var(--rule);font-size:15px}
+  .tl{margin-top:12px;border-top:2px solid var(--ink)}
+  .tl .r{display:grid;grid-template-columns:22px 52px 1fr auto;gap:8px;align-items:baseline;padding:8px 8px 8px 4px;border-bottom:1px solid var(--rule);font-size:15px}
   .tl .mk{font-size:13px;color:var(--muted);text-align:center}
   .tl .tm{font-family:var(--mono);color:var(--muted);font-size:14px}
   .tl .wt{font-family:var(--mono);font-weight:500;font-size:15px}
@@ -132,15 +132,21 @@
   footer a{color:var(--ink)}
 
   /* fixed controls */
-  .dock{flex:none;position:relative;background:var(--paper);border-top:1px solid var(--rule);box-shadow:0 -6px 16px rgba(0,0,0,.04);
-    padding:12px calc(20px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));z-index:5}
+  .dock{flex:none;position:relative;background:var(--paper);border-top:1px solid var(--rule);
+    padding:8px calc(20px + env(safe-area-inset-right)) max(8px, calc(env(safe-area-inset-bottom) - 12px)) calc(20px + env(safe-area-inset-left));z-index:5}
   .dock-in{max-width:560px;margin:0 auto;display:flex;gap:10px}
-  .btn{flex:1;min-height:54px;border-radius:4px;padding:14px 12px;font-size:17px;font-weight:600;cursor:pointer;border:2px solid var(--ink);background:transparent;transition:opacity .1s}
+  .btn{flex:1;min-height:46px;border-radius:4px;padding:10px 12px;font-size:16px;font-weight:600;cursor:pointer;border:2px solid var(--ink);background:transparent;transition:opacity .1s}
   .btn:active{opacity:.7}
   .btn.primary{background:var(--ink);color:var(--paper)}
-  .btn.small{flex:0 0 auto;padding:14px 16px;font-weight:600}
+  .btn.small{flex:0 0 auto;padding:10px 16px;font-weight:600}
   .btn[hidden]{display:none}
 
+  @media (max-height: 700px){
+    .clock{font-size:64px}
+    .now .act{font-size:24px}
+    .now li{font-size:15px;margin:2px 0}
+    .tl .r{padding:6px 8px 6px 4px;font-size:14px}
+  }
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;scroll-behavior:auto !important}
   }
