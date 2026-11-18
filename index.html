@@ -148,7 +148,8 @@
 
   /* Liquid-glass style morph between button layouts */
   .dock-in{position:relative}
-  .morph{position:absolute;inset:0;pointer-events:none;filter:url(#goo);z-index:2}
+  .morph{position:absolute;inset:0;pointer-events:none;filter:url(#goo);z-index:0}
+  .dock-in .btn{position:relative;z-index:1}
   .morph i{position:absolute;top:0;height:100%;border-radius:999px;display:block}
   .morph-labels{position:absolute;inset:0;pointer-events:none;z-index:3}
   :root{--blob1:#141414;--blob2:#cfcbc3}
@@ -523,7 +524,7 @@
     const edgeOf = (main, target) => target.x + target.w/2 < main.x + main.w/2
       ? { x: main.x, w: bud } : { x: main.x + main.w - bud, w: bud };
     const layer = document.createElement('div'); layer.className = 'morph'; dockIn.appendChild(layer);
-    const DUR = 340, SPRING = 'cubic-bezier(.32,1.32,.42,1)';
+    const DUR = 340, SPRING = 'cubic-bezier(.32,1.32,.42,1)', MERGE = 'cubic-bezier(.25,.75,.3,1)';
     const anims = [];
     // Splitting (more buttons after): new pills bud off the main pill and pull away.
     // Merging (fewer buttons after): the exact same motion, played in reverse.
@@ -537,8 +538,9 @@
       const to = { x: o.x, w: o.w };
       const i = document.createElement('i'); i.style.background = o.primary ? 'var(--blob1)' : 'var(--blob2)';
       layer.appendChild(i);
-      anims.push(i.animate([{ left: from.x + 'px', width: from.w + 'px' }, { left: to.x + 'px', width: to.w + 'px' }],
-        { duration: DUR, easing: SPRING, fill: 'both', direction: merging ? 'reverse' : 'normal' }));
+      // split: springy pull-apart. merge: the same path backwards, but moving straight away (no stall), easing into the join
+      const kf = [{ left: from.x + 'px', width: from.w + 'px' }, { left: to.x + 'px', width: to.w + 'px' }];
+      anims.push(i.animate(merging ? kf.reverse() : kf, { duration: DUR, easing: merging ? MERGE : SPRING, fill: 'both' }));
     });
     // labels: the old buttons fade out first, the new ones fade in once the liquid has settled
     const ghosts = document.createElement('div'); ghosts.className = 'morph-labels'; dockIn.appendChild(ghosts);
@@ -547,10 +549,11 @@
       g.style.cssText = `position:absolute;top:0;height:100%;left:${bf.x}px;width:${bf.w}px;margin:0;display:flex;align-items:center;justify-content:center;background:transparent;border-color:transparent;color:${bf.primary ? 'var(--paper)' : 'var(--ink)'}`;
       ghosts.appendChild(g);
     });
-    anims.push(ghosts.animate([{ opacity: 1 }, { opacity: 0, offset: .3 }, { opacity: 0 }], { duration: DUR, fill: 'both' }));
-    const inAt = merging ? .78 : .45;   // a merge only shows the new button once the pills have rejoined
+    anims.push(ghosts.animate([{ opacity: 1 }, { opacity: 0, offset: merging ? .15 : .3 }, { opacity: 0 }], { duration: DUR, fill: 'both' }));
+    const inAt = merging ? .5 : .45;    // a merge shows the new button as soon as the pills have rejoined
     after.forEach(a => anims.push(a.el.animate([{ opacity: 0 }, { opacity: 0, offset: inAt, easing: 'ease-out' }, { opacity: 1 }], { duration: DUR })));
-    anims.push(layer.animate([{ opacity: 1 }, { opacity: 1, offset: merging ? .8 : .6 }, { opacity: 0 }], { duration: DUR, fill: 'both' }));
+    // the liquid sits under the real buttons, so they fade in on top of it; it only fades at the very end
+    anims.push(layer.animate([{ opacity: 1 }, { opacity: 1, offset: .85 }, { opacity: 0 }], { duration: DUR, fill: 'both' }));
     const done = () => { layer.remove(); ghosts.remove(); morphing = null; };
     morphing = () => { anims.forEach(x => x.cancel()); done(); };
     anims[anims.length-1].onfinish = done;
