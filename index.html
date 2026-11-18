@@ -313,7 +313,7 @@
     one: {
       name:'1 Cup', title:'A Better 1 Cup V60 Technique', year:2022, target:180,
       video:'https://www.youtube.com/watch?v=1oB1oDrDkHM',
-      note:'The video brews 15 g to 250 g at 60 g per litre: a 50 g bloom, then four 50 g pours. Other settings scale the pours to 20/40/60/80/100% of the water; the clock times stay the video’s.',
+      note:'The video brews 15 g to 250 g at 60 g per litre: a 50 g bloom, then four 50 g pours. Other settings scale the pours to 40/60/80/100% of the water, with the bloom at 20% of it but never more than 50 g; the clock times stay the video’s.',
       rinse:'Rinse the filter and preheat the V60.<small>Doing it over the sink slows the water down, so it heats the cone with less water.</small>',
       tips:[
         ['Grind medium-fine','— use soft, filtered water, freshly boiled for lighter roasts.'],
@@ -322,7 +322,7 @@
         ['Short pulses with pauses','— add 50 g at a time, letting it drain a little in between.'],
         ['Aim for about 3:00 total,','but drawdown varies. Taste matters most.'] ],
       phases(){
-        const b = pct(.2), p2 = pct(.4), p3 = pct(.6), p4 = pct(.8), all = water();
+        const b = Math.min(50, pct(.2)), p2 = pct(.4), p3 = pct(.6), p4 = pct(.8), all = water();   // bloom never exceeds 50 g
         const pour = (key,row,start,end,at,from,to,by) => ({ key, row, start, end, at, ch:2,
           title:()=>`Pour to ${big(to)}`, short:`Pour (${Math.round(to/all*100)}%)`, wt:to,
           steps:[`Add ${to-from} g, finishing by ${by}.`, `Pour gently in small circles.`] });
