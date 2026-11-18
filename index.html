@@ -32,12 +32,12 @@
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
   html,body{margin:0;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
-  body{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  body{position:relative;display:flex;flex-direction:column;height:100vh;height:100dvh}
   .scroller{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   button{font-family:inherit;color:inherit}
   :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .wrap{max-width:560px;margin:0 auto;
-    padding:calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) 28px calc(20px + env(safe-area-inset-left))}
+    padding:calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
   .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 
   /* header */
@@ -132,32 +132,20 @@
   footer a{color:var(--ink)}
 
   /* fixed controls */
-  .dock{flex:none;position:relative;background:var(--paper);border-top:1px solid var(--rule);
-    padding:8px calc(20px + env(safe-area-inset-right)) max(8px, calc(env(safe-area-inset-bottom) - 12px)) calc(20px + env(safe-area-inset-left));z-index:5}
-  .dock-in{max-width:560px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .dock{position:absolute;z-index:5;left:calc(14px + env(safe-area-inset-left));right:calc(14px + env(safe-area-inset-right));
+    bottom:max(14px, calc(env(safe-area-inset-bottom) - 6px));max-width:532px;margin:0 auto;padding:6px;border-radius:999px;
+    background:rgba(245,244,240,.72);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);
+    border:1px solid rgba(20,20,20,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 10px 30px rgba(20,20,20,.16)}
+  @media (prefers-color-scheme: dark){
+    .dock{background:rgba(30,30,30,.72);border-color:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 30px rgba(0,0,0,.5)}
+  }
+  .dock-in{display:flex;gap:6px}
   .btn{flex:1;min-height:46px;border-radius:999px;padding:10px 12px;font-size:16px;font-weight:600;cursor:pointer;border:2px solid var(--ink);background:transparent;transition:opacity .1s}
   .btn:active{opacity:.7}
   .btn.primary{background:var(--ink);color:var(--paper)}
   .btn.small{flex:0 0 auto;padding:10px 20px;font-weight:600}
   .btn[hidden]{display:none}
 
-  /* sections + combined bottom bar */
-  .summaryline{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:46px;padding:4px 0;font-size:14px;color:var(--muted);border-bottom:1px solid var(--rule)}
-  .linkbtn{border:0;background:none;padding:10px 0;font:600 14px var(--sans);color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-  .tabpage h2{font-family:var(--serif);font-weight:500;font-size:24px;margin:16px 0 8px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-  .tabpage h2 .meta{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--muted)}
-  .tabpage .adjust-body{border-bottom:0;padding-top:4px}
-  .tabpage footer{margin-top:14px}
-  .tabdot{flex:none;width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);background:transparent;color:var(--ink);display:grid;place-items:center;padding:0;cursor:pointer}
-  .tabdot[aria-expanded="true"]{background:var(--ink);color:var(--paper)}
-  .ctrls{flex:1;display:flex;gap:8px;min-width:0}
-  .ctrls[hidden],.tabs[hidden]{display:none}
-  .ctrls .btn.small{padding:10px 16px}
-  .ctrls .btn.iconbtn{flex:0 0 46px;width:46px;padding:0;display:grid;place-items:center}
-  .tabs{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1.5px solid var(--ink);border-radius:999px;overflow:hidden}
-  .tabs button{border:0;background:transparent;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font:600 12px var(--sans);cursor:pointer;padding:3px 0}
-  .tabs button + button{border-left:1.5px solid var(--ink)}
-  .tabs button.on{background:var(--ink);color:var(--paper)}
   @media (max-height: 700px){
     .clock{font-size:64px}
     .now .act{font-size:24px}
@@ -177,7 +165,6 @@
     <h1>Hoffmann’s V60 Technique</h1>
   </header>
 
-  <section class="tabpage" data-tab="brew">
   <div class="recipe">
     <div><div class="k">Coffee</div><div class="v"><span data-dose>30</span><span class="u">g</span></div></div>
     <div><div class="k">Water</div><div class="v"><span data-water>500</span><span class="u">g</span></div></div>
@@ -185,48 +172,8 @@
     <div><div class="k">Finish</div><div class="v" data-target>3:30</div></div>
   </div>
 
-  <div class="summaryline"><span><b id="methodName" style="color:var(--ink);font-weight:600">Original</b> · medium-fine grind</span><button type="button" class="linkbtn" id="toRecipe">Adjust</button></div>
-
-  <section class="brew" id="brew">
-    <div class="clock" id="clock">0:00</div>
-    <div class="clocksub" id="clocksub">Ready when you are</div>
-    <div class="bar"><i id="bar"></i></div>
-    <div class="now">
-      <div class="kicker" id="nowLab">Up first</div>
-      <div class="act" id="nowAct">Bloom</div>
-      <ul id="nowList"></ul>
-    </div>
-    <div class="next" id="next"></div>
-    <div class="tl" id="tl"></div>
-  </section>
-  </section>
-
-  <section class="tabpage" data-tab="prep" hidden>
-    <h2>Before you start <span class="meta" id="prepMeta">0 of 6</span></h2>
-    <ol class="prep" id="prep">
-      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="t">Boil your water.<small>As hot as you can — especially with lighter roasts.</small></span></li>
-      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="t">Grind <span data-dose>30</span> g of coffee, medium-fine.</span></li>
-      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="t" id="prepRinse">Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small></span></li>
-      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="t">Add the grounds to the V60.</span></li>
-      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="t">Make a well in the middle of the grounds.</span></li>
-      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <span class="t">Tare the scale, kettle in hand.<small>Press Start as you begin the bloom pour.</small></span></li>
-    </ol>
-  </section>
-
-  <section class="tabpage" data-tab="notes" hidden>
-    <h2>Notes from the video</h2>
-    <ul class="tips" id="tips"></ul>
-    <footer id="credit"></footer>
-  </section>
-
-  <section class="tabpage" data-tab="recipe" hidden>
-    <h2>Recipe</h2>
+  <details class="adjust" id="adjust">
+    <summary><span><b id="methodName" style="color:var(--ink);font-weight:600">Original</b> · medium-fine grind</span><span class="act-link">Adjust <span class="plus" aria-hidden="true">+</span></span></summary>
     <div class="adjust-body">
       <div class="row">
         <label for="doseRange">Coffee</label>
@@ -262,25 +209,54 @@
         <label><input type="checkbox" id="wakeChk" checked> Keep screen awake</label>
       </div>
     </div>
+  </details>
+
+  <section class="brew" id="brew">
+    <div class="clock" id="clock">0:00</div>
+    <div class="clocksub" id="clocksub">Ready when you are</div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="now">
+      <div class="kicker" id="nowLab">Up first</div>
+      <div class="act" id="nowAct">Bloom</div>
+      <ul id="nowList"></ul>
+    </div>
+    <div class="next" id="next"></div>
+    <div class="tl" id="tl"></div>
   </section>
+
+  <details class="fold" id="prepFold">
+    <summary><h2>Before you start</h2><span class="meta" id="prepMeta">0 of 6</span><span class="plus">+</span></summary>
+    <ol class="prep" id="prep">
+      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t">Boil your water.<small>As hot as you can — especially with lighter roasts.</small></span></li>
+      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t">Grind <span data-dose>30</span> g of coffee, medium-fine.</span></li>
+      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t" id="prepRinse">Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small></span></li>
+      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t">Add the grounds to the V60.</span></li>
+      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t">Make a well in the middle of the grounds.</span></li>
+      <li><span class="box"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <span class="t">Tare the scale, kettle in hand.<small>Press Start as you begin the bloom pour.</small></span></li>
+    </ol>
+  </details>
+
+  <details class="fold">
+    <summary><h2>Notes from the video</h2><span class="plus">+</span></summary>
+    <ul class="tips" id="tips"></ul>
+  </details>
+
+  <footer id="credit"></footer>
 </div>
 </main>
 
-<nav class="dock" aria-label="Brew controls and sections">
+<nav class="dock">
   <div class="dock-in">
-    <button type="button" class="tabdot" id="tabBtn" aria-expanded="false" aria-label="Brew section. Show sections"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg></button>
-    <div class="ctrls" id="ctrls">
-      <button class="btn small" id="resetBtn" hidden>Reset</button>
-      <button class="btn small" id="pauseBtn" hidden>Pause</button>
-      <button class="btn primary" id="startBtn">Start — pour bloom</button>
-      <button class="btn primary" id="advBtn" hidden>Next step</button>
-    </div>
-    <div class="tabs" id="tabs" hidden>
-      <button type="button" data-go="brew"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>Brew</button>
-      <button type="button" data-go="prep"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l2 2 3-3M11 6h10M3 14l2 2 3-3M11 14h10"/></svg>Prep</button>
-      <button type="button" data-go="notes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 11h8M8 15h6"/></svg>Notes</button>
-      <button type="button" data-go="recipe"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Recipe</button>
-    </div>
+    <button class="btn small" id="resetBtn" hidden>Reset</button>
+    <button class="btn small" id="pauseBtn" hidden>Pause</button>
+    <button class="btn primary" id="startBtn">Start — pour bloom</button>
+    <button class="btn primary" id="advBtn" hidden>Next step</button>
   </div>
 </nav>
 
@@ -390,7 +366,7 @@
   const clock=$('clock'), clocksub=$('clocksub'), nowLab=$('nowLab'), nowAct=$('nowAct'), nowList=$('nowList'),
         bar=$('bar'), next=$('next'), startBtn=$('startBtn'), advBtn=$('advBtn'), pauseBtn=$('pauseBtn'),
         resetBtn=$('resetBtn'), tl=$('tl'), beepChk=$('beepChk'), wakeChk=$('wakeChk'),
-        doseRange=$('doseRange'), prepMeta=$('prepMeta'), tabBtn=$('tabBtn'), tabsEl=$('tabs'), ctrls=$('ctrls'), scroller=$('scroller');
+        doseRange=$('doseRange'), prepMeta=$('prepMeta');
 
   // ---------- state ----------
   let P = M().phases(), idx = 0, running=false, finished=false, t0=0, acc=0, raf=null, manualAt=null, finalT=null;
@@ -502,17 +478,7 @@
     advBtn.hidden = !showAdv;
     if(p.manual) advBtn.textContent = p.manual;
     pauseBtn.hidden = !mid;
-    // on manual steps there are four buttons, so Pause shrinks to an icon
-    pauseBtn.classList.toggle('iconbtn', showAdv);
-    if(showAdv){
-      pauseBtn.innerHTML = running
-        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>'
-        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l10-6.5z"/></svg>';
-      pauseBtn.setAttribute('aria-label', running ? 'Pause' : 'Resume');
-    } else {
-      pauseBtn.textContent = running ? 'Pause' : 'Resume';
-      pauseBtn.removeAttribute('aria-label');
-    }
+    pauseBtn.textContent = running ? 'Pause' : 'Resume';
     pauseBtn.classList.toggle('primary', mid && !showAdv);
     pauseBtn.classList.toggle('small', showAdv);
     resetBtn.hidden = !started;
@@ -548,7 +514,7 @@
   startBtn.addEventListener('click', ()=>{
     if(finished) reset();
     try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume && actx.resume(); }catch(e){}
-    showTab('brew');
+    $('adjust').open = false;
     running=true; t0=performance.now(); wake(true);
     renderNow(); renderTL(); setButtons(); chime(1); loop();
     document.getElementById('brew').scrollIntoView({behavior:'smooth', block:'start'});
@@ -562,30 +528,6 @@
   advBtn.addEventListener('click', advance);
   wakeChk.addEventListener('change', ()=>wake(running && wakeChk.checked));
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && running) wake(true); });
-
-  // ---------- sections (Brew / Prep / Notes / Recipe) ----------
-  const TAB_NAME = { brew:'Brew', prep:'Prep', notes:'Notes', recipe:'Recipe' };
-  const TAB_ICON = {}; document.querySelectorAll('#tabs button').forEach(b => TAB_ICON[b.dataset.go] = b.querySelector('svg').outerHTML.replace(/width="20" height="20"/, 'width="22" height="22"'));
-  const CLOSE_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-  let tab = 'brew', tabsOpen = false;
-  function setTabsOpen(open){
-    tabsOpen = open; tabsEl.hidden = !open; ctrls.hidden = open;
-    tabBtn.setAttribute('aria-expanded', open);
-    tabBtn.setAttribute('aria-label', open ? 'Hide sections' : `${TAB_NAME[tab]} section. Show sections`);
-    tabBtn.innerHTML = open ? CLOSE_ICON : TAB_ICON[tab];
-  }
-  function showTab(t){
-    if(t !== tab){ scroller.scrollTop = 0; }
-    tab = t;
-    document.querySelectorAll('[data-tab]').forEach(s => s.hidden = s.dataset.tab !== t);
-    document.querySelectorAll('#tabs button').forEach(b => { b.classList.toggle('on', b.dataset.go === t); b.setAttribute('aria-current', b.dataset.go === t ? 'page' : 'false'); });
-    setTabsOpen(false);
-  }
-  tabBtn.addEventListener('click', () => setTabsOpen(!tabsOpen));
-  document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.go)));
-  $('toRecipe').addEventListener('click', () => showTab('recipe'));
-  document.addEventListener('keydown', e => { if(e.key === 'Escape' && tabsOpen) setTabsOpen(false); });
-  showTab('brew');
 
   const prepItems = [...document.querySelectorAll('#prep li')];
   const renderPrep = () => { prepMeta.textContent = `${prepItems.filter(li=>li.classList.contains('done')).length} of ${prepItems.length}`; };
