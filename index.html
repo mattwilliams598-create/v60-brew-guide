@@ -14,11 +14,11 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon-v2.png">
 <title>V60</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#f5f4f0; --ink:#141414; --muted:#55524c; --faint:#6e6a63; --rule:#cfcac1; --wash:#e9e6df;
-    --serif:Newsreader,Georgia,serif; --sans:"Instrument Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --serif:Newsreader,Georgia,serif; --sans:"Instrument Sans",system-ui,sans-serif; --mono:"IBM Plex Sans",system-ui,sans-serif;
   }
   @media (prefers-color-scheme: dark){
     :root{ --paper:#121212; --ink:#f2f0eb; --muted:#b3afa7; --faint:#8c8880; --rule:#3a3835; --wash:#1f1e1c; }
@@ -31,11 +31,13 @@
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
-  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+  body{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  .scroller{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   button{font-family:inherit;color:inherit}
   :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .wrap{max-width:560px;margin:0 auto;
-    padding:calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(124px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
+    padding:calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) 28px calc(20px + env(safe-area-inset-left))}
   .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 
   /* header */
@@ -77,7 +79,7 @@
 
   /* brew */
   .brew{padding:18px 0 4px}
-  .clock{font-family:var(--mono);font-weight:400;font-size:clamp(80px,25vw,116px);line-height:.95;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+  .clock{font-family:var(--mono);font-weight:400;font-size:clamp(84px,26vw,120px);line-height:.95;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
   .clocksub{font-size:16px;color:var(--muted);margin-top:8px;min-height:24px}
   .clocksub b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:-.02em}
   .clocksub b.plain{font-family:inherit;font-size:inherit;letter-spacing:0}
@@ -86,7 +88,7 @@
   .bar i{display:block;height:100%;width:0;background:var(--ink);transition:width .2s linear}
   .now{margin-top:16px;padding:14px 16px 16px;background:var(--wash);border-left:4px solid var(--ink)}
   .now .act{font-family:var(--serif);font-size:clamp(26px,7.4vw,32px);font-weight:500;line-height:1.1;margin:4px 0 10px;letter-spacing:-.01em}
-  .now .act .w{font-family:var(--mono);font-weight:500;font-size:1.3em;letter-spacing:-.04em;white-space:nowrap}
+  .now .act .w{font-family:var(--mono);font-weight:500;font-size:1.3em;letter-spacing:-.02em;white-space:nowrap}
   .now ul{margin:0;padding:0;list-style:none}
   .now li{position:relative;padding-left:18px;margin:6px 0;font-size:16px;line-height:1.45}
   .now li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--ink)}
@@ -130,7 +132,7 @@
   footer a{color:var(--ink)}
 
   /* fixed controls */
-  .dock{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--rule);box-shadow:0 -6px 16px rgba(0,0,0,.04);
+  .dock{flex:none;position:relative;background:var(--paper);border-top:1px solid var(--rule);box-shadow:0 -6px 16px rgba(0,0,0,.04);
     padding:12px calc(20px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));z-index:5}
   .dock-in{max-width:560px;margin:0 auto;display:flex;gap:10px}
   .btn{flex:1;min-height:54px;border-radius:4px;padding:14px 12px;font-size:17px;font-weight:600;cursor:pointer;border:2px solid var(--ink);background:transparent;transition:opacity .1s}
@@ -145,6 +147,7 @@
 </style>
 </head>
 <body>
+<main class="scroller" id="scroller">
 <div class="wrap">
 
   <header>
@@ -159,7 +162,7 @@
   </div>
 
   <details class="adjust" id="adjust">
-    <summary><span><b id="methodName" style="color:var(--ink);font-weight:600">Ultimate</b> · medium-fine grind</span><span class="act-link">Adjust <span class="plus" aria-hidden="true">+</span></span></summary>
+    <summary><span><b id="methodName" style="color:var(--ink);font-weight:600">Original</b> · medium-fine grind</span><span class="act-link">Adjust <span class="plus" aria-hidden="true">+</span></span></summary>
     <div class="adjust-body">
       <div class="row">
         <label for="doseRange">Coffee</label>
@@ -177,7 +180,7 @@
         <label>Method</label>
         <div class="chips two" id="methodChips">
           <button data-m="one">1 Cup<em data-auto="one"></em></button>
-          <button data-m="ult">Ultimate<em data-auto="ult"></em></button>
+          <button data-m="ult">Original<em data-auto="ult"></em></button>
         </div>
       </div>
       <div class="row">
@@ -235,6 +238,7 @@
 
   <footer id="credit"></footer>
 </div>
+</main>
 
 <nav class="dock">
   <div class="dock-in">
@@ -260,13 +264,13 @@
   try{ const s = parseInt(localStorage.getItem('v60dose')); if(s>=10 && s<=40) dose = s; }catch(e){}
 
   // ---------- methods ----------
-  // <= 20 g uses the 1 Cup technique by default; more uses the Ultimate technique.
+  // <= 20 g uses the 1 Cup technique by default; more uses the Original (Ultimate V60) technique.
   const autoMethod = () => dose <= 20 ? 'one' : 'ult';
   const method = () => methodOverride || autoMethod();
 
   const METHODS = {
     ult: {
-      name:'Ultimate', title:'The Ultimate V60 Technique', year:2019, target:210,
+      name:'Original', title:'The Ultimate V60 Technique', year:2019, target:210,
       video:'https://www.youtube.com/watch?v=AI4ynXzkSQo',
       note:'The video brews 30 g to 500 g at 60 g per litre. Other settings keep the bloom at 2× the coffee and the first pour at 60% of the water; the clock times stay the video’s.',
       rinse:'Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small>',
