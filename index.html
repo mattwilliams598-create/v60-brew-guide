@@ -146,6 +146,12 @@
   .btn.small{flex:0 0 auto;padding:10px 20px;font-weight:600}
   .btn[hidden]{display:none}
 
+  /* Liquid-glass style morph between button layouts */
+  .dock-in{position:relative}
+  .morph{position:absolute;inset:0;pointer-events:none;filter:url(#goo);z-index:2}
+  .morph i{position:absolute;top:0;height:100%;border-radius:999px;display:block}
+  :root{--blob1:#141414;--blob2:#cfcbc3}
+  @media (prefers-color-scheme: dark){ :root{--blob1:#f2f0eb;--blob2:#4a4845} }
   @media (max-height: 700px){
     .clock{font-size:64px}
     .now .act{font-size:24px}
@@ -250,6 +256,14 @@
   <footer id="credit"></footer>
 </div>
 </main>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="goo" x="-20%" y="-50%" width="140%" height="200%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10" result="goo"/>
+    <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+  </filter>
+</svg>
 
 <nav class="dock">
   <div class="dock-in">
@@ -468,6 +482,7 @@
   }
 
   function setButtons(){
+    const before = snapButtons();
     const started = running || acc>0, mid = midBrew();
     doseRange.disabled = mid;
     document.querySelectorAll('#ratioChips button, #methodChips button, #presetChips button').forEach(b=>b.disabled = mid);
@@ -482,6 +497,54 @@
     pauseBtn.classList.toggle('primary', mid && !showAdv);
     pauseBtn.classList.toggle('small', showAdv);
     resetBtn.hidden = !started;
+    morphButtons(before, snapButtons());
+  }
+
+  // ---------- liquid split / merge between button layouts ----------
+  const dockIn = document.querySelector('.dock-in');
+  const reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
+  let buttonsReady = false, morphing = null;
+  function snapButtons(){
+    const box = dockIn.getBoundingClientRect();
+    return [...dockIn.querySelectorAll('.btn')].filter(b => !b.hidden).map(b => {
+      const r = b.getBoundingClientRect();
+      return { id:b.id, el:b, x:r.left-box.left, w:r.width, primary:b.classList.contains('primary') };
+    });
+  }
+  const sig = list => list.map(b => b.id + (b.primary ? '*' : '')).join('|');
+  function morphButtons(before, after){
+    if(!buttonsReady){ buttonsReady = true; return; }
+    if(sig(before) === sig(after) || reduceMotion.matches || !dockIn.animate) return;
+    if(morphing){ morphing(); }
+    const h = dockIn.getBoundingClientRect().height, bud = Math.round(h * .55);
+    const prim = list => list.find(b => b.primary) || list[list.length-1];
+    const pb = prim(before), pa = prim(after);
+    // where a new button grows from (or an old one shrinks into): the nearest edge of the main button
+    const edgeOf = (main, target) => target.x + target.w/2 < main.x + main.w/2
+      ? { x: main.x, w: bud } : { x: main.x + main.w - bud, w: bud };
+    const layer = document.createElement('div'); layer.className = 'morph'; dockIn.appendChild(layer);
+    const anims = [];
+    const blob = (from, to, filled, fade) => {
+      const i = document.createElement('i'); i.style.background = filled ? 'var(--blob1)' : 'var(--blob2)';
+      i.style.left = to.x + 'px'; i.style.width = to.w + 'px'; layer.appendChild(i);
+      const kf = [{ left: from.x + 'px', width: from.w + 'px' }, { left: to.x + 'px', width: to.w + 'px' }];
+      anims.push(i.animate(kf, { duration: 560, easing: 'cubic-bezier(.32,1.32,.42,1)', fill: 'both' }));
+      if(fade) anims.push(i.animate([{ opacity: 1 }, { opacity: 1, offset: .55 }, { opacity: 0 }], { duration: 560, fill: 'both' }));
+    };
+    after.forEach(a => {
+      const old = before.find(b => b.id === a.id) || (a.primary && pb && pb.primary ? pb : null);
+      blob(old ? { x: old.x, w: old.w } : edgeOf(pb, a), { x: a.x, w: a.w }, a.primary, false);
+    });
+    before.filter(b => !after.some(a => a.id === b.id) && !(b.primary && pa && pa.primary)).forEach(b => {
+      blob({ x: b.x, w: b.w }, edgeOf(pa, b), b.primary, true);
+    });
+    // the real buttons (labels, borders) fade in as the liquid settles
+    const real = after.map(a => a.el);
+    real.forEach(el => anims.push(el.animate([{ opacity: 0 }, { opacity: 0, offset: .45 }, { opacity: 1 }], { duration: 560, easing: 'ease-out' })));
+    anims.push(layer.animate([{ opacity: 1 }, { opacity: 1, offset: .6 }, { opacity: 0 }], { duration: 560, fill: 'both' }));
+    const done = () => { layer.remove(); morphing = null; };
+    morphing = () => { anims.forEach(x => x.cancel()); done(); };
+    anims[anims.length-1].onfinish = done;
   }
 
   function advance(){
