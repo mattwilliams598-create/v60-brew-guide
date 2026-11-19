@@ -40,6 +40,7 @@
     padding:calc(30px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
   /* keep text out of iOS's soft blur along the top edge, including when Start scrolls to the timer */
   #brew{scroll-margin-top:calc(26px + env(safe-area-inset-top))}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 
   /* header */
@@ -69,7 +70,7 @@
   .hist-sum{font-size:14px;color:var(--muted);margin:4px 0 0}
   .hist-day{font-family:var(--sans);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:20px 2px 6px}
   .hcard{padding:0 6px 0 14px}
-  .hrow{display:grid;grid-template-columns:66px minmax(0,1fr) auto 36px;gap:8px;align-items:start;padding:12px 0}
+  .hrow{display:grid;grid-template-columns:66px minmax(0,1fr) auto 44px;gap:8px;align-items:start;padding:12px 0}
   .hrow + .hrow{border-top:1px solid var(--rule)}
   .hwhen{font-family:var(--mono);font-size:14px;color:var(--muted);padding-top:2px}
   .hwhat{font-size:15px;line-height:1.35}
@@ -78,12 +79,12 @@
   .hwhat small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
   .htime{font-family:var(--mono);font-weight:500;font-size:20px;line-height:1.1;text-align:right}
   .htime small{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px}
-  .hdel{border:0;background:none;color:var(--muted);width:36px;height:36px;margin-top:-6px;border-radius:50%;display:grid;place-items:center;cursor:pointer;padding:0}
+  .hdel{border:0;background:none;color:var(--muted);width:44px;height:44px;margin-top:-10px;border-radius:50%;display:grid;place-items:center;cursor:pointer;padding:0}
   .hist-empty{font-size:15px;color:var(--muted);margin:16px 0}
   .hist-actions{margin:18px 0 0;font-size:14px;color:var(--muted)}
   #histConfirm:not([hidden]){display:flex;flex-wrap:wrap;align-items:center;gap:8px}
   #histConfirm span{margin-right:4px}
-  .linkbtn{height:36px;padding:0 16px;border:1.5px solid var(--ink);border-radius:999px;background:transparent;font:600 14px var(--sans);color:var(--ink);cursor:pointer}
+  .linkbtn{height:44px;padding:0 16px;border:1.5px solid var(--ink);border-radius:999px;background:transparent;font:600 14px var(--sans);color:var(--ink);cursor:pointer}
   .linkbtn:active{opacity:.7}
   .linkbtn.danger{color:#a0261d;border-color:#a0261d}
   @media (prefers-color-scheme: dark){ .linkbtn.danger{color:#ff8a80;border-color:#ff8a80} }
@@ -118,7 +119,7 @@
   .chips button{border:0;background:transparent;font-family:var(--mono);font-weight:500;font-size:14px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:48px}
   .chips.two{grid-template-columns:repeat(2,1fr)}
   .chips button + button{border-left:1.5px solid var(--ink)}
-  .chips button em{font-family:var(--sans);font-style:normal;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .chips button em{font-family:var(--sans);font-style:normal;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
   .chips button.on{background:var(--ink);color:var(--paper)}
   .chips button:disabled{opacity:.4;cursor:not-allowed}
   .opts{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:var(--ink);margin-top:14px}
@@ -291,6 +292,7 @@
     <div class="next" id="next"></div>
     <h2 class="sec" id="stepsLab">Steps</h2>
     <div class="card tl" id="tl"></div>
+    <div class="sr" id="srLive" aria-live="polite"></div>
   </section>
 
   <details class="card fold" id="prepFold">
@@ -346,7 +348,7 @@
   <div class="dock-in">
     <button class="btn small" id="resetBtn" hidden>Reset</button>
     <button class="btn small" id="pauseBtn" hidden>Pause</button>
-    <button class="btn primary" id="startBtn">Start — pour bloom</button>
+    <button class="btn primary" id="startBtn">Start</button>
     <button class="btn primary" id="advBtn" hidden>Next step</button>
   </div>
 </nav>
@@ -454,7 +456,7 @@
 
   // ---------- elements ----------
   const $ = id => document.getElementById(id);
-  const clock=$('clock'), clocksub=$('clocksub'), nowLab=$('nowLab'), nowAct=$('nowAct'), nowList=$('nowList'),
+  const srLive=$('srLive'), clock=$('clock'), clocksub=$('clocksub'), nowLab=$('nowLab'), nowAct=$('nowAct'), nowList=$('nowList'),
         bar=$('bar'), next=$('next'), startBtn=$('startBtn'), advBtn=$('advBtn'), pauseBtn=$('pauseBtn'),
         resetBtn=$('resetBtn'), tl=$('tl'), beepChk=$('beepChk'), wakeChk=$('wakeChk'),
         doseRange=$('doseRange');
@@ -531,7 +533,7 @@
       nowAct.innerHTML='Enjoy your coffee.';
       const diff = finalT-target;
       nowList.innerHTML = `<li>Total time ${fmt(finalT)} — target ${fmt(target)}${Math.abs(diff)<5?', right on':diff>0?`, ${fmt(diff)} over`:`, ${fmt(-diff)} under`}.</li><li>Saved to History.</li>`;
-      bar.style.width='100%'; next.innerHTML='';
+      bar.style.width='100%'; next.innerHTML=''; srLive.textContent = 'Done. Saved to History.';
       return;
     }
     const p = P[idx], started = running || acc>0;
@@ -539,6 +541,9 @@
     nowAct.innerHTML = p.title();
     nowList.innerHTML = p.steps.map(s=>`<li>${s}</li>`).join('');
     next.innerHTML = nextCue();
+    // announce each new step to VoiceOver (only when it changes)
+    const say = started ? `${nowLab.textContent}. ${nowAct.textContent}` : '';
+    if(say !== srLive.textContent) srLive.textContent = say;
   }
 
   function updateClock(){
@@ -566,7 +571,7 @@
     const p = P[idx];
     const showAdv = mid && !!p.manual;
     startBtn.hidden = mid;
-    startBtn.textContent = finished ? 'Brew again' : 'Start — pour bloom';
+    startBtn.textContent = finished ? 'Brew again' : 'Start';
     advBtn.hidden = !showAdv;
     if(p.manual) advBtn.textContent = p.manual;
     pauseBtn.hidden = !mid;
@@ -773,6 +778,44 @@
   };
   pane.addEventListener('touchend', endDrag);
   pane.addEventListener('touchcancel', endDrag);
+  // pull in from the right edge of the brew screen to open History
+  let pull = null;
+  mainEl.addEventListener('touchstart', e => {
+    if(histOpen || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    if(t.clientX < window.innerWidth - 24) return;   // only from the right edge
+    pull = { x0: t.clientX, y0: t.clientY, dx: 0, active: false, lx: t.clientX, lt: performance.now(), v: 0 };
+  }, { passive: true });
+  mainEl.addEventListener('touchmove', e => {
+    if(!pull) return;
+    const t = e.touches[0], dx = t.clientX - pull.x0, dy = t.clientY - pull.y0;
+    if(!pull.active){
+      if(Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)){ pull = null; return; }
+      if(dx > -8) return;
+      pull.active = true; renderHistory(); pane.scrollTop = 0;
+      document.body.classList.add('dragging'); pane.style.visibility = 'visible';
+    }
+    e.preventDefault();
+    const now = performance.now();
+    pull.v = (t.clientX - pull.lx) / Math.max(1, now - pull.lt); pull.lx = t.clientX; pull.lt = now;
+    pull.dx = Math.min(0, dx);
+    const f = Math.min(1, -pull.dx / window.innerWidth);
+    pane.style.transform = `translateX(${window.innerWidth + pull.dx}px)`;
+    mainEl.style.transform = `translateX(${-28 * f}%)`;
+    mainEl.style.opacity = String(1 - .4 * f);
+  }, { passive: false });
+  const endPull = () => {
+    if(!pull) return;
+    const d = pull; pull = null;
+    if(!d.active) return;
+    const open = -d.dx > window.innerWidth * .35 || d.v < -.45;
+    document.body.classList.remove('dragging');
+    void pane.offsetWidth;
+    pane.style.transform = ''; pane.style.visibility = ''; mainEl.style.transform = ''; mainEl.style.opacity = '';
+    if(open) setHistory(true);
+  };
+  mainEl.addEventListener('touchend', endPull);
+  mainEl.addEventListener('touchcancel', endPull);
   $('histList').addEventListener('click', e => {
     const btn = e.target.closest('.hdel'); if(!btn) return;
     saveH(loadH().filter(b => String(b.t) !== btn.dataset.t)); renderHistory();
