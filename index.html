@@ -160,7 +160,7 @@
   .dock{position:absolute;z-index:5;left:calc(10px + var(--sl));right:calc(10px + var(--sr));bottom:max(16px,calc(var(--sb) - 4px));max-width:540px;margin:0 auto;
     height:52px;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:opacity .3s ease,transform var(--dur) var(--ease)}
   .dock > *{pointer-events:auto}
-  .dock button{flex:0 0 auto;height:52px;min-width:0;margin:0 6px;padding:0 22px;border-radius:26px;display:inline-flex;align-items:center;justify-content:center;
+  .dock button{flex:.0001 0 auto;height:52px;min-width:0;margin:0 6px;padding:0 22px;border-radius:26px;display:inline-flex;align-items:center;justify-content:center;
     overflow:hidden;white-space:nowrap;font-weight:600;font-size:17px;cursor:pointer;
     transition:flex-grow var(--dur) var(--ease),min-width var(--dur) var(--ease),padding var(--dur) var(--ease),margin var(--dur) var(--ease),opacity .3s ease,
       background-color .35s ease,color .35s ease,border-width .35s ease,box-shadow .35s ease,transform .15s ease}
@@ -175,15 +175,15 @@
   .dock .ic{width:20px;height:20px;max-width:0;opacity:0}
   #startBtn:not(.done) .ic-play{max-width:20px;opacity:1;margin-right:6px}
   /* buttons that aren't part of this state fold away to nothing */
-  .dock button.off{flex-grow:0;min-width:0;padding:0;margin:0;opacity:0;border-width:0;box-shadow:none;pointer-events:none}
+  .dock button.off{flex-grow:.0001;min-width:0;padding:0;margin:0;opacity:0;border-width:0;box-shadow:none;pointer-events:none}
   .dock button.off .lbl,#startBtn.off .ic{max-width:0;margin:0}
   #startBtn.off,#pauseBtn.off{min-width:0}
   /* minimised while scrolling: icon-only circles */
   body.dock-compact .dock{transform:translateY(6px)}
   /* minimised circles go to the corners: Reset left, Pause centre (or right), Done right */
-  .dock .sp{flex:0 1 0px;align-self:stretch;pointer-events:none;transition:flex-grow var(--dur) var(--ease)}
+  .dock .sp{flex:.0001 1 0px;align-self:stretch;pointer-events:none;transition:flex-grow var(--dur) var(--ease)}
   body.dock-compact .dock.st-timed #spA,body.dock-compact .dock.st-confirm #spA,body.dock-compact .dock.st-confirm #spB{flex-grow:1}
-  body.dock-compact .dock button:not(.off){flex-grow:0;min-width:52px;padding:0 16px}
+  body.dock-compact .dock button:not(.off){flex-grow:.0001;min-width:52px;padding:0 16px}
   body.dock-compact #startBtn:not(.off),body.dock-compact #pauseBtn:not(.off){min-width:52px}
   body.dock-compact .dock .glass:not(.off){padding:0 15px}   /* its 1px border keeps the circle at 52 */
   body.dock-compact .dock .lbl{max-width:0;opacity:0}
@@ -722,6 +722,8 @@
   // large titles collapse into the top bar once they scroll under it
   let quietUntil = 0;   // ignore the app's own scrolling (e.g. Start bringing the timer into view)
   function setCompact(view, on){
+    if(view.classList.contains('compact') === on && (view !== mainView || document.body.classList.contains('dock-compact') === on)) return;
+    void dock.offsetWidth;   // flush layout so every engine has a "before" state to transition from
     view.classList.toggle('compact', on);
     if(view === mainView) document.body.classList.toggle('dock-compact', on);
   }
@@ -731,7 +733,7 @@
       const y = scroller.scrollTop, dy = y - last; last = y;
       view.classList.toggle('scrolled', y > 34);
       if(y < 40 || performance.now() < quietUntil){ run = 0; setCompact(view, false); return; }
-      if(y + scroller.clientHeight >= scroller.scrollHeight - 2) return;   // ignore the bounce at the bottom
+      if(dy < 0 && y + scroller.clientHeight >= scroller.scrollHeight - 2) return;   // ignore the bounce back at the bottom
       if((dy > 0) !== (run > 0)) run = 0;             // direction changed: start counting again
       run += dy;
       if(run > 14) setCompact(view, true);            // scrolling down: tuck the controls away
@@ -739,6 +741,7 @@
     };
     scroller.addEventListener('scroll', on, { passive: true }); on();
   }
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelectorAll('.dock .lbl').forEach(fitLabel));
   watchTitle($('scroller'), mainView);
   watchTitle($('histScroller'), $('historyPane'));
 
