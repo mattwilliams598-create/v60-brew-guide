@@ -160,11 +160,13 @@
   /* Each button is placed by left + width for every state, so all motion is plain length
      interpolation (no flex maths), which every browser engine animates smoothly. */
   .dock{position:absolute;z-index:5;left:calc(16px + var(--sl));right:calc(16px + var(--sr));bottom:max(16px,calc(var(--sb) - 4px));max-width:528px;margin:0 auto;
-    height:52px;pointer-events:none;transition:opacity .3s ease,transform var(--dur) var(--ease)}
+    height:52px;pointer-events:none;transition:opacity .3s ease,transform .45s cubic-bezier(.32,.72,0,1)}
   .dock button{position:absolute;top:0;height:52px;margin:0;padding:0;border-radius:26px;display:flex;align-items:center;justify-content:center;
     overflow:hidden;white-space:nowrap;font-weight:600;font-size:17px;cursor:pointer;pointer-events:auto;
-    transition:left var(--dur) var(--ease),width var(--dur) var(--ease),opacity .3s ease,
+    transition:opacity .3s ease,
       background-color .35s ease,color .35s ease,border-color .35s ease,box-shadow .35s ease,transform .15s ease}
+  .dock{will-change:transform}
+  .dock button,.topbar .icon-btn,.topbar .text-btn,.edge-top,.inline-title{will-change:transform,opacity}   /* layers exist before the first scroll */
   .dock .prominent{box-shadow:0 8px 24px var(--lift)}
   .dock .glass{box-shadow:inset 0 1px 0 var(--glass-hi),0 8px 24px var(--glass-sh)}
   /* where each button rests when it isn't part of the current state (it grows from / shrinks into here) */
@@ -183,7 +185,7 @@
   .st-confirm #pauseBtn{left:calc((100% - 16px) / 3 + 8px);width:calc((100% - 16px) / 3)}
   .st-confirm #advBtn{left:calc((100% - 16px) * 2 / 3 + 16px);width:calc((100% - 16px) / 3)}
   /* labels and icons fold in and out rather than popping */
-  .dock .lbl,.dock .ic{display:block;flex:none;overflow:hidden;transition:max-width var(--dur) var(--ease),opacity .3s ease,margin var(--dur) var(--ease)}
+  .dock .lbl,.dock .ic{display:block;flex:none;overflow:hidden;transition:max-width .45s cubic-bezier(.32,.72,0,1),opacity .3s ease,margin .45s cubic-bezier(.32,.72,0,1)}
   .dock .lbl{max-width:var(--w,160px)}
   .dock .ic{width:19px;height:19px;max-width:19px;opacity:1;margin-right:6px}
   #startBtn:not(.done) .ic-reset,#startBtn.done .ic-play,#pauseBtn:not(.paused) .ic-play,#pauseBtn.paused .ic-pause{max-width:0;opacity:0;margin:0}
@@ -200,12 +202,12 @@
   body.hist .dock{opacity:0;transform:translateY(30px);pointer-events:none}
   body.hist .dock > *{pointer-events:none}
   /* top bar buttons shrink a touch on the same curve */
-  .topbar .icon-btn,.topbar .text-btn{transition:transform var(--dur) var(--ease),opacity .15s ease}
+  .topbar .icon-btn,.topbar .text-btn{transition:transform .45s cubic-bezier(.32,.72,0,1),opacity .15s ease}
   .view.compact .topbar .icon-btn{transform:scale(.84)}
   .view.compact .topbar .text-btn{transform:scale(.88)}
   .view.compact .topbar #histBtn,.view.compact .topbar #histEdit{transform-origin:right center}
   .view.compact .topbar #histBack{transform-origin:left center}
-  .inline-title{transition:opacity .25s ease,font-size var(--dur) var(--ease)}
+  .inline-title{transition:opacity .25s ease,font-size .45s cubic-bezier(.32,.72,0,1)}
   .view.compact .inline-title{font-size:15px}
 
   /* ---------- Adjust sheet ---------- */
@@ -214,7 +216,7 @@
   .sheet{position:absolute;z-index:9;left:0;right:0;bottom:0;max-width:600px;margin:0 auto;max-height:calc(100% - var(--st) - 20px);overflow-y:auto;overscroll-behavior:contain;
     background:var(--bg);border-radius:34px 34px 0 0;padding:8px calc(16px + var(--sr)) calc(28px + var(--sb)) calc(16px + var(--sl));
     transform:translateY(105%);visibility:hidden;box-shadow:0 -6px 30px rgba(0,0,0,.15);transition:transform .45s cubic-bezier(.2,.9,.25,1),visibility 0s linear .45s}
-  body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .45s cubic-bezier(.2,.9,.25,1)}
+  .sheet.open{transform:none;visibility:visible;transition:transform .45s cubic-bezier(.2,.9,.25,1)}
   body.sheet-drag .sheet,body.sheet-drag .scrim{transition:none}
   .grabber{width:36px;height:5px;border-radius:3px;background:var(--ter);opacity:.5;margin:0 auto 6px}
   .sheet-head{position:relative;height:44px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;touch-action:none}
@@ -234,6 +236,27 @@
   .seg button.on{background:var(--segon);font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
   @media (prefers-color-scheme: dark){ .seg button.on{box-shadow:none} }
 
+  /* ---------- Brew details card (sheet) ---------- */
+  .bd-hero{padding:16px 16px 18px;text-align:center}
+  .bd-when{font-size:15px;color:var(--sec)}
+  .bd-total{font-weight:400;font-size:64px;line-height:1;letter-spacing:-.03em;margin-top:8px}
+  .bd-vs{font-size:15px;color:var(--sec);margin-top:8px}
+  .bd-vs b{color:var(--ink);font-weight:600}
+  .bd-bar{display:flex;gap:2px;height:8px;border-radius:999px;overflow:hidden;margin-top:18px}
+  .bd-bar i{display:block;height:100%;min-width:3px}
+  .bd-bar .a{background:var(--ink)} .bd-bar .r{background:var(--sep)} .bd-bar .d{background:var(--ter)}
+  .bd-key{display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:13px;color:var(--sec)}
+  .bd-key span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+  .bd-key .a::before{background:var(--ink)} .bd-key .r::before{background:var(--sep)} .bd-key .d::before{background:var(--ter)}
+  .kv{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;font-size:17px}
+  .kv + .kv{border-top:1px solid var(--sep)}
+  .kv .v{color:var(--sec);text-align:right;white-space:nowrap}
+  .kv .v small{font-size:13px;margin-left:6px}
+  .bd-again{display:flex;width:100%;height:50px;margin-top:22px;border-radius:25px;font-weight:600;font-size:17px;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+  .bd-again:disabled{opacity:.35}
+  .bd-delete{margin-top:12px}
+  .bd-delete button{width:100%;min-height:48px;border:0;background:none;padding:0;text-align:left;color:var(--red);font-size:17px;cursor:pointer}
+
   /* ---------- History ---------- */
   .hcard{padding:0;overflow:hidden}
   .hitem{position:relative;overflow:hidden}
@@ -241,7 +264,11 @@
   .hrow{position:relative;z-index:1;display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 16px;background:var(--card);transition:transform .3s cubic-bezier(.2,.85,.25,1);touch-action:pan-y}
   .hitem.open .hrow{transform:translateX(-88px)}
   .hitem.swiping .hrow{transition:none}
+  .hopen{flex:1;min-width:0;display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;margin:0;text-align:left;font:inherit;color:inherit;cursor:pointer;min-height:48px}
+  .hrow{transition:transform .3s cubic-bezier(.2,.85,.25,1),background-color .2s ease}
+  .hrow:has(.hopen:active){background:color-mix(in srgb,var(--ink) 7%,var(--card))}   /* iOS-style row highlight */
   .hmain{flex:1;min-width:0}
+  .hmain > span,.hright > span{display:block}
   .h1{font-size:17px}
   .h1 b{font-weight:600}
   .h2{font-size:15px;color:var(--sec);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -372,6 +399,14 @@
 </nav>
 
 <div class="scrim" id="scrim"></div>
+<section class="sheet" id="brewSheet" role="dialog" aria-modal="true" aria-labelledby="brewTitle" inert>
+  <div class="sheet-head" id="brewHead">
+    <button type="button" class="icon-btn glass" id="brewClose" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="brewTitle">Brew</h2>
+    <span style="width:44px"></span>
+  </div>
+  <div id="brewBody"></div>
+</section>
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" inert>
   <div class="sheet-head" id="sheetHead">
     <button type="button" class="icon-btn glass" id="sheetCancel" aria-label="Cancel"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -510,6 +545,7 @@
 
   // ---------- state ----------
   let P = M().phases(), idx = 0, running=false, finished=false, t0=0, acc=0, raf=null, manualAt=null, finalT=null, drawAt=null;
+  let log = [], pauses = 0, pausedFor = 0, pausedAt = null;   // what actually happened, for Brew History
   const elapsed = () => acc + (running ? (performance.now()-t0)/1000 : 0);
   const fmt = s => { s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
   const midBrew = () => running || (acc>0 && !finished);
@@ -632,24 +668,42 @@
   let dockReady = false;
   const reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
   const fitLabel = l => l.style.setProperty('--w', Math.ceil(l.scrollWidth) + 'px');
+  // Every layout change of the toolbar goes through here: measure, change, then animate each
+  // button's left/width from where it was to where it is (interrupting cleanly mid-animation).
+  const EASE = 'cubic-bezier(.32,.72,0,1)', DUR = 450;
+  function animateDock(change){
+    const btns = [...dock.querySelectorAll('button')];
+    const before = btns.map(b => [b.offsetLeft, b.offsetWidth]);
+    btns.forEach(b => b.getAnimations().forEach(a => { if(a.id === 'dock') a.cancel(); }));
+    change();
+    if(!dockReady || reduceMotion.matches || !dock.animate || document.body.classList.contains('hist')) return;
+    btns.forEach((b, i) => {
+      const [l0, w0] = before[i], l1 = b.offsetLeft, w1 = b.offsetWidth;
+      if(Math.abs(l0 - l1) < .5 && Math.abs(w0 - w1) < .5) return;
+      const a = b.animate([{ left: l0 + 'px', width: w0 + 'px' }, { left: l1 + 'px', width: w1 + 'px' }], { duration: DUR, easing: EASE });
+      a.id = 'dock';
+    });
+  }
   function setButtons(){
-    if(dockReady) setCompact(mainView, false);     // a change of controls always shows them full size
     const mid = midBrew(), p = P[idx], confirm = mid && !!p.manual;
     const show = (el, on) => { el.classList.toggle('off', !on); el.inert = !on; };
-    adjustBtn.disabled = mid;
-    startLabel.textContent = finished ? 'Reset' : 'Start';
-    startBtn.className = 'prominent' + (finished ? ' done' : '');
-    startBtn.setAttribute('aria-label', startLabel.textContent);
-    show(startBtn, !mid);
-    resetBtn.className = 'glass'; show(resetBtn, mid);
-    pauseLabel.textContent = running ? 'Pause' : 'Resume';
-    pauseBtn.setAttribute('aria-label', pauseLabel.textContent);
-    pauseBtn.className = (confirm ? 'glass' : 'prominent') + (running ? '' : ' paused');
-    show(pauseBtn, mid);
-    if(p.manual){ advLabel.textContent = p.manual; advBtn.setAttribute('aria-label', p.manual); }
-    advBtn.className = 'prominent'; show(advBtn, confirm);
-    dock.classList.toggle('st-ready', !mid); dock.classList.toggle('st-timed', mid && !confirm); dock.classList.toggle('st-confirm', confirm);
-    document.querySelectorAll('.dock .lbl').forEach(fitLabel);
+    animateDock(() => {
+      document.body.classList.remove('dock-compact'); mainView.classList.remove('compact');   // a change of controls always shows them full size
+      adjustBtn.disabled = mid;
+      startLabel.textContent = finished ? 'Reset' : 'Start';
+      startBtn.className = 'prominent' + (finished ? ' done' : '');
+      startBtn.setAttribute('aria-label', startLabel.textContent);
+      show(startBtn, !mid);
+      resetBtn.className = 'glass'; show(resetBtn, mid);
+      pauseLabel.textContent = running ? 'Pause' : 'Resume';
+      pauseBtn.setAttribute('aria-label', pauseLabel.textContent);
+      pauseBtn.className = (confirm ? 'glass' : 'prominent') + (running ? '' : ' paused');
+      show(pauseBtn, mid);
+      if(p.manual){ advLabel.textContent = p.manual; advBtn.setAttribute('aria-label', p.manual); }
+      advBtn.className = 'prominent'; show(advBtn, confirm);
+      dock.classList.toggle('st-ready', !mid); dock.classList.toggle('st-timed', mid && !confirm); dock.classList.toggle('st-confirm', confirm);
+      document.querySelectorAll('.dock .lbl').forEach(fitLabel);
+    });
     dockReady = true;
   }
 
@@ -664,6 +718,7 @@
     idx = target;
     manualAt = p.start == null ? t : null;
     drawAt = p.key === 'draw' ? t : null;
+    log.push([p.key, p.short, Math.round(t), 'skip']);
     chime(p.ch || 2);
     renderNow(); renderTL(); setButtons(); updateClock();
   }
@@ -679,9 +734,11 @@
       idx++;
       if(P[idx].start==null) manualAt = elapsed();
       if(P[idx].key==='draw') drawAt = elapsed();
+      log.push([P[idx].key, P[idx].short, Math.round(elapsed())]);
       chime(P[idx].ch || 2);
     } else {
       finished = true; finalT = elapsed(); running=false; acc=finalT; cancelAnimationFrame(raf); wake(false); chime(3);
+      log.push(['end', 'Drained', Math.round(finalT)]);
       recordBrew();
     }
     renderNow(); renderTL(); setButtons(); updateClock();
@@ -695,7 +752,7 @@
   }
 
   function reset(){
-    running=false; finished=false; acc=0; idx=0; manualAt=null; finalT=null; drawAt=null;
+    running=false; finished=false; acc=0; idx=0; manualAt=null; finalT=null; drawAt=null; log=[]; pauses=0; pausedFor=0; pausedAt=null;
     cancelAnimationFrame(raf); wake(false);
     clocksub.classList.remove('over'); bar.style.width='0%';
     renderNow(); renderTL(); setButtons(); updateClock();
@@ -708,6 +765,7 @@
     try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume && actx.resume(); }catch(e){}
     setSheet(false); setHistory(false);
     running=true; t0=performance.now(); wake(true);
+    log = [[P[0].key, P[0].short, 0]]; pauses = 0; pausedFor = 0; pausedAt = null;
     renderNow(); renderTL(); setButtons(); chime(1); loop();
     // scroll only the content (scrollIntoView would also nudge the fixed layers)
     const brew = $('brew');
@@ -715,8 +773,8 @@
     $('scroller').scrollTo({ top: brew.offsetTop - parseFloat(getComputedStyle(brew).scrollMarginTop || 0), behavior: 'smooth' });
   });
   pauseBtn.addEventListener('click', ()=>{
-    if(running){ acc = elapsed(); running=false; cancelAnimationFrame(raf); wake(false); }
-    else { running=true; t0=performance.now(); wake(true); loop(); }
+    if(running){ acc = elapsed(); running=false; cancelAnimationFrame(raf); wake(false); pauses++; pausedAt = performance.now(); }
+    else { running=true; t0=performance.now(); wake(true); loop(); if(pausedAt){ pausedFor += (performance.now() - pausedAt) / 1000; pausedAt = null; } }
     setButtons(); updateClock();
   });
   resetBtn.addEventListener('click', reset);
@@ -726,22 +784,27 @@
   // large titles collapse into the top bar once they scroll under it
   let quietUntil = 0;   // ignore the app's own scrolling (e.g. Start bringing the timer into view)
   function setCompact(view, on){
-    if(view.classList.contains('compact') === on && (view !== mainView || document.body.classList.contains('dock-compact') === on)) return;
-    void dock.offsetWidth;   // flush layout so every engine has a "before" state to transition from
     view.classList.toggle('compact', on);
-    if(view === mainView) document.body.classList.toggle('dock-compact', on);
+    if(view === mainView && document.body.classList.contains('dock-compact') !== on)
+      animateDock(() => document.body.classList.toggle('dock-compact', on));
+  }
+  // scroll events can arrive in bursts; apply the change once, on the next frame
+  const compactWanted = new Map(); let compactFrame = 0;
+  function queueCompact(view, on){
+    compactWanted.set(view, on);
+    if(!compactFrame) compactFrame = requestAnimationFrame(() => { compactFrame = 0; compactWanted.forEach((o, v) => setCompact(v, o)); compactWanted.clear(); });
   }
   function watchTitle(scroller, view){
     let last = scroller.scrollTop, run = 0;
     const on = () => {
       const y = scroller.scrollTop, dy = y - last; last = y;
       view.classList.toggle('scrolled', y > 34);
-      if(y < 40 || performance.now() < quietUntil){ run = 0; setCompact(view, false); return; }
+      if(y < 40 || performance.now() < quietUntil){ run = 0; queueCompact(view, false); return; }
       if(dy < 0 && y + scroller.clientHeight >= scroller.scrollHeight - 2) return;   // ignore the bounce back at the bottom
       if((dy > 0) !== (run > 0)) run = 0;             // direction changed: start counting again
       run += dy;
-      if(run > 14) setCompact(view, true);            // scrolling down: tuck the controls away
-      else if(run < -28) setCompact(view, false);     // scrolling back up: bring them back
+      if(run > 14) queueCompact(view, true);          // scrolling down: tuck the controls away
+      else if(run < -28) queueCompact(view, false);   // scrolling back up: bring them back
     };
     scroller.addEventListener('scroll', on, { passive: true }); on();
   }
@@ -762,7 +825,7 @@
       try{ localStorage.setItem('v60dose', dose); localStorage.setItem('v60ratio', ratio); }catch(e){}
       renderSettings();
     }
-    document.body.classList.toggle('sheet-open', open);
+    document.body.classList.toggle('sheet-open', open); sheet.classList.toggle('open', open);
     sheet.inert = !open; mainView.inert = open; dock.inert = open;
     if(open){ sheet.scrollTop = 0; $('sheetDone').focus({ preventScroll: true }); }
     else adjustBtn.focus({ preventScroll: true });
@@ -770,38 +833,41 @@
   adjustBtn.addEventListener('click', () => setSheet(true));
   $('sheetDone').addEventListener('click', () => setSheet(false, true));
   $('sheetCancel').addEventListener('click', () => setSheet(false, false));
-  $('scrim').addEventListener('click', () => setSheet(false, true));
-  document.addEventListener('keydown', e => { if(e.key === 'Escape' && sheetOpen) setSheet(false, false); });
-  // swipe the sheet down to dismiss it (keeps your changes, like tapping outside it)
-  let sdrag = null;
-  sheet.addEventListener('touchstart', e => {
-    if(e.touches.length !== 1) return;
-    const inHead = e.target.closest('#sheetHead') && !e.target.closest('button');
-    if(!inHead && sheet.scrollTop > 0) return;
-    if(e.target.closest('input, .seg')) return;
-    sdrag = { y0: e.touches[0].clientY, dy: 0, active: false, lt: performance.now(), ly: e.touches[0].clientY, v: 0 };
-  }, { passive: true });
-  sheet.addEventListener('touchmove', e => {
-    if(!sdrag) return;
-    const y = e.touches[0].clientY, dy = y - sdrag.y0;
-    if(!sdrag.active){ if(dy < 8) { if(dy < -4) sdrag = null; return; } sdrag.active = true; document.body.classList.add('sheet-drag'); }
-    e.preventDefault();
-    const now = performance.now(); sdrag.v = (y - sdrag.ly) / Math.max(1, now - sdrag.lt); sdrag.ly = y; sdrag.lt = now;
-    sdrag.dy = Math.max(0, dy);
-    sheet.style.transform = `translateY(${sdrag.dy}px)`;
-    $('scrim').style.opacity = String(1 - Math.min(1, sdrag.dy / sheet.offsetHeight));
-  }, { passive: false });
-  const endSheetDrag = () => {
-    if(!sdrag) return;
-    const d = sdrag; sdrag = null;
-    if(!d.active) return;
-    document.body.classList.remove('sheet-drag');
-    void sheet.offsetWidth;
-    sheet.style.transform = ''; $('scrim').style.opacity = '';
-    if(d.dy > sheet.offsetHeight * .3 || d.v > .5) setSheet(false, true);
-  };
-  sheet.addEventListener('touchend', endSheetDrag);
-  sheet.addEventListener('touchcancel', endSheetDrag);
+  $('scrim').addEventListener('click', () => { if(sheetOpen) setSheet(false, true); if(brewOpen) setBrewSheet(false); });
+  document.addEventListener('keydown', e => { if(e.key !== 'Escape') return; if(sheetOpen) setSheet(false, false); if(brewOpen) setBrewSheet(false); });
+  // swipe a sheet down to dismiss it (Adjust keeps your changes, like tapping outside it)
+  function sheetDrag(el, head, dismiss){
+    let d = null;
+    el.addEventListener('touchstart', e => {
+      if(e.touches.length !== 1) return;
+      const inHead = e.target.closest(head) && !e.target.closest('button');
+      if(!inHead && el.scrollTop > 0) return;
+      if(e.target.closest('input, .seg')) return;
+      d = { y0: e.touches[0].clientY, dy: 0, active: false, lt: performance.now(), ly: e.touches[0].clientY, v: 0 };
+    }, { passive: true });
+    el.addEventListener('touchmove', e => {
+      if(!d) return;
+      const y = e.touches[0].clientY, dy = y - d.y0;
+      if(!d.active){ if(dy < 8) { if(dy < -4) d = null; return; } d.active = true; document.body.classList.add('sheet-drag'); }
+      e.preventDefault();
+      const now = performance.now(); d.v = (y - d.ly) / Math.max(1, now - d.lt); d.ly = y; d.lt = now;
+      d.dy = Math.max(0, dy);
+      el.style.transform = `translateY(${d.dy}px)`;
+      $('scrim').style.opacity = String(1 - Math.min(1, d.dy / el.offsetHeight));
+    }, { passive: false });
+    const end = () => {
+      if(!d) return;
+      const x = d; d = null;
+      if(!x.active) return;
+      document.body.classList.remove('sheet-drag');
+      void el.offsetWidth;
+      el.style.transform = ''; $('scrim').style.opacity = '';
+      if(x.dy > el.offsetHeight * .3 || x.v > .5) dismiss();
+    };
+    el.addEventListener('touchend', end);
+    el.addEventListener('touchcancel', end);
+  }
+  sheetDrag(sheet, '#sheetHead', () => setSheet(false, true));
 
   // ---------- brew history (saved on this device) ----------
   const HKEY = 'v60history';
@@ -810,7 +876,8 @@
   function recordBrew(){
     const a = loadH();
     a.unshift({ t: Date.now(), method: method(), name: M().name, dose, water: water(), ratio: ratioLabel(),
-                total: Math.round(finalT), target: M().target, draw: drawAt!=null ? Math.round(finalT - drawAt) : null });
+                total: Math.round(finalT), target: M().target, draw: drawAt!=null ? Math.round(finalT - drawAt) : null,
+                bloom: P[0].wt, log, plan: rows().filter(p => p.start != null).map(p => [p.short, p.at]), pauses, paused: Math.round(pausedFor) });
     saveH(a);
   }
   const dayKey = t => new Date(t).toDateString();
@@ -840,8 +907,10 @@
         <button type="button" class="hdelete" tabindex="-1">Delete</button>
         <div class="hrow">
           <button type="button" class="hminus" aria-label="Delete the ${clockTime(b.t)} brew from ${dayLabel(b.t)}"><span></span></button>
-          <div class="hmain"><div class="h1"><b>${b.name}</b> · ${clockTime(b.t)}</div><div class="h2">${amt}</div>${b.draw!=null ? `<div class="h3">Drawdown ${fmt(b.draw)}</div>` : ''}</div>
-          <div class="hright"><div class="ht">${fmt(b.total)}</div><div class="hv">${vsTarget(b.total, b.target)}</div></div>
+          <button type="button" class="hopen" aria-label="${b.name} brew, ${clockTime(b.t)} ${dayLabel(b.t)}, ${fmt(b.total)}. Show details.">
+            <span class="hmain"><span class="h1"><b>${b.name}</b> · ${clockTime(b.t)}</span><span class="h2">${amt}</span>${b.draw!=null ? `<span class="h3">Drawdown ${fmt(b.draw)}</span>` : ''}</span>
+            <span class="hright"><span class="ht">${fmt(b.total)}</span><span class="hv">${vsTarget(b.total, b.target)}</span></span>
+          </button>
         </div></div>`;
     });
     if(last !== null) html += '</div>';
@@ -870,7 +939,8 @@
     const item = e.target.closest('.hitem'); if(!item) return;
     if(e.target.closest('.hdelete')) return deleteRow(item);
     if(e.target.closest('.hminus')){ closeRows(item); item.classList.toggle('open'); item.querySelector('.hdelete').tabIndex = item.classList.contains('open') ? 0 : -1; return; }
-    if(item.classList.contains('open')) item.classList.remove('open');
+    if(item.classList.contains('open')){ item.classList.remove('open'); return; }
+    if(e.target.closest('.hopen') && !editing) openBrew(+item.dataset.t);
   });
   // swipe a row left to reveal Delete
   let rdrag = null;
@@ -905,13 +975,87 @@
     if(window.confirm('Clear all brew history? This can’t be undone.')){ saveH([]); setEditing(false); renderHistory(); }
   });
 
+  // ---------- Brew details card ----------
+  const brewSheet = $('brewSheet');
+  let brewOpen = false, brewT = null;
+  const RATIO_KEY = { '1:16':'16', '1:16.7':'hoff', '1:17':'17', '1:18':'18' };
+  const kv = (k, v) => `<div class="kv"><span>${k}</span><span class="v">${v}</span></div>`;
+  function renderBrew(b){
+    const d = new Date(b.t), diff = b.total - b.target;
+    const when = d.toLocaleDateString(undefined, { weekday:'long', month:'short', day:'numeric' }) + ' · ' + clockTime(b.t);
+    const vs = Math.abs(diff) < 5 ? `<b>On target</b> — aim was ${fmt(b.target)}` : `<b>${fmt(Math.abs(diff))} ${diff > 0 ? 'over' : 'under'}</b> the ${fmt(b.target)} target`;
+    const bloom = b.bloom != null ? b.bloom : (b.method === 'one' ? Math.min(50, Math.round(b.water * .2)) : b.dose * 2);
+    // a strip of the brew: active pouring/swirling, resting, then drawdown
+    let bar = '', steps = '';
+    if(Array.isArray(b.log) && b.log.length > 1){
+      const kind = k => k === 'draw' ? 'd' : (/^w\d|^bswirl$/.test(k) ? 'r' : 'a');
+      for(let i = 0; i < b.log.length - 1; i++){
+        const dur = Math.max(0, b.log[i+1][2] - b.log[i][2]);
+        if(dur > 0) bar += `<i class="${kind(b.log[i][0])}" style="flex:${dur}"></i>`;
+      }
+      const plan = new Map((b.plan || []).map(([n, at]) => [n, at]));
+      const toSec = at => { const [m, s2] = String(at).split(':'); return (+m) * 60 + (+s2); };
+      steps = b.log.filter(e => e[0] !== 'end' && !/^w\d$/.test(e[0])).map(([k, name, t, skip]) => {
+        const at = k === 'draw' ? null : plan.get(name), off = at != null ? t - toSec(at) : 0;   // drawdown's listed time is the finish, not a start
+        const note = skip ? '<small>skipped to</small>' : (at != null && Math.abs(off) >= 2 ? `<small>${off > 0 ? '+' : '−'}${fmt(Math.abs(off))}</small>` : '');
+        return kv(name, `${fmt(t)}${note}`);
+      }).join('') + kv('Drained', fmt(b.total));
+    }
+    $('brewTitle').textContent = `${b.name} Brew`;
+    $('brewBody').innerHTML = `
+      <div class="card bd-hero">
+        <div class="bd-when">${when}</div>
+        <div class="bd-total">${fmt(b.total)}</div>
+        <div class="bd-vs">${vs}</div>
+        ${bar ? `<div class="bd-bar" aria-hidden="true">${bar}</div><div class="bd-key" aria-hidden="true"><span class="a">Pouring</span><span class="r">Resting</span><span class="d">Drawdown</span></div>` : ''}
+      </div>
+      <h3 class="sec-h">Recipe</h3>
+      <div class="card">${kv('Method', b.name)}${kv('Coffee', b.dose + ' g')}${kv('Water', b.water + ' g')}${kv('Ratio', b.ratio)}${kv('Bloom', bloom + ' g')}</div>
+      <h3 class="sec-h">Timing</h3>
+      <div class="card">${kv('Total time', fmt(b.total))}${kv('Target', fmt(b.target))}${b.draw != null ? kv('Drawdown', fmt(b.draw)) : ''}${b.pauses ? kv('Paused', `${b.pauses}× · ${fmt(b.paused || 0)}`) : ''}</div>
+      ${steps ? `<h3 class="sec-h">Steps</h3><div class="card">${steps}</div><p class="sec-f">Clock time when each step began.</p>` : ''}
+      <button type="button" class="prominent bd-again" id="brewAgain"${midBrew() ? ' disabled' : ''}>Brew This Again</button>
+      ${midBrew() ? '<p class="sec-f">Finish or reset the current brew first.</p>' : ''}
+      <div class="card bd-delete"><button type="button" id="brewDelete">Delete Brew</button></div>`;
+  }
+  function openBrew(t){
+    const b = loadH().find(x => x.t === t); if(!b) return;
+    brewT = t; renderBrew(b); setBrewSheet(true);
+  }
+  function setBrewSheet(open){
+    if(open === brewOpen) return;
+    brewOpen = open;
+    document.body.classList.toggle('sheet-open', open); brewSheet.classList.toggle('open', open);
+    brewSheet.inert = !open; pane.inert = open || !histOpen;
+    if(open){ brewSheet.scrollTop = 0; $('brewClose').focus({ preventScroll: true }); }
+    else { const row = document.querySelector(`.hitem[data-t="${brewT}"] .hopen`); if(row) row.focus({ preventScroll: true }); }
+  }
+  $('brewClose').addEventListener('click', () => setBrewSheet(false));
+  sheetDrag(brewSheet, '#brewHead', () => setBrewSheet(false));
+  brewSheet.addEventListener('click', e => {
+    if(e.target.closest('#brewAgain')){
+      const b = loadH().find(x => x.t === brewT); if(!b || midBrew()) return;
+      if(finished) reset();
+      dose = b.dose; ratio = RATIO_KEY[b.ratio] || ratio;
+      methodOverride = (b.method === 'one' || b.method === 'ult') && b.method !== autoMethod() ? b.method : null;
+      try{ localStorage.setItem('v60dose', dose); localStorage.setItem('v60ratio', ratio); }catch(err){}
+      renderSettings(); setButtons();
+      setBrewSheet(false); setHistory(false);
+      $('scroller').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    if(e.target.closest('#brewDelete')){
+      if(!window.confirm('Delete this brew? This can’t be undone.')) return;
+      saveH(loadH().filter(x => x.t !== brewT)); setBrewSheet(false); renderHistory();
+    }
+  });
+
   let histOpen = false;
   const pane = $('historyPane');
   function setHistory(open){
     if(open === histOpen) return;
     histOpen = open;
     if(open){ renderHistory(); $('histScroller').scrollTop = 0; pane.classList.remove('scrolled'); }
-    else if(editing) setEditing(false);
+    else { if(editing) setEditing(false); setBrewSheet(false); }
     document.body.classList.toggle('hist', open);
     pane.inert = !open; mainView.inert = open; dock.inert = open;
     (open ? $('histBack') : $('histBtn')).focus({ preventScroll: true });
