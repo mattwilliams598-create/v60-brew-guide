@@ -32,6 +32,7 @@
       --fill:rgba(255,255,255,.10); --segon:#4a4844; --onink:#121212; --red:#ff6961; --redfill:#d93a31; --scrim:rgba(0,0,0,.5);
       --glass:rgba(52,51,49,.70); --glass-line:rgba(255,255,255,.10); --glass-hi:rgba(255,255,255,.14); --glass-sh:rgba(0,0,0,.45); --lift:rgba(0,0,0,.5); }
   }
+  @media (prefers-reduced-transparency: reduce){ :root{ --glass:var(--card); } .glass{-webkit-backdrop-filter:none;backdrop-filter:none} }
   @media (prefers-contrast: more){ :root{ --sec:#3d3a35; --ter:#5c5952; --sep:#a9a49a; --glass:rgba(255,255,255,.92); } }
   @media (prefers-contrast: more) and (prefers-color-scheme: dark){ :root{ --sec:#dcd9d2; --ter:#c2beb6; --sep:#6b6862; --glass:rgba(40,39,37,.95); } }
 
@@ -298,21 +299,21 @@
     <section id="brew" aria-label="Brew timer">
       <div class="clock" id="clock">0:00</div>
       <div class="clocksub" id="clocksub">Ready when you are</div>
-      <div class="progress"><i id="bar"></i></div>
+      <div class="progress" aria-hidden="true"><i id="bar"></i></div>
       <h2 class="sec-h" id="nowLab">Up first</h2>
       <div class="card now">
         <div class="act" id="nowAct">Bloom</div>
         <ul id="nowList"></ul>
       </div>
       <div class="sec-f" id="next"></div>
-      <h2 class="sec-h">Steps</h2>
+      <h2 class="sec-h" id="stepsHead">Steps</h2>
       <div class="card tl" id="tl"></div>
       <div class="sr" id="srLive" aria-live="polite"></div>
     </section>
 
     <div class="card disc">
       <details id="prepFold">
-        <summary><h2>Before you start</h2><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+        <summary><h2>Before You Start</h2><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
         <ol class="prep" id="prep">
           <li><span class="t">Boil your water.<small>As hot as you can — especially with lighter roasts.</small></span></li>
           <li><span class="t">Grind <span data-dose>30</span> g of coffee, medium-fine.</span></li>
@@ -323,7 +324,7 @@
         </ol>
       </details>
       <details>
-        <summary><h2>Notes from the video</h2><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+        <summary><h2>Notes from the Video</h2><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
         <ul class="tips" id="tips"></ul>
       </details>
     </div>
@@ -557,7 +558,7 @@
     $('methodNote').textContent = m.note;
     $('prepRinse').innerHTML = m.rinse;
     $('tips').innerHTML = m.tips.map(([b,t])=>`<li><b>${b}</b> ${t}</li>`).join('');
-    $('credit').innerHTML = `Method: James Hoffmann, <a href="${m.video}">${m.title}</a> (${m.year}).`;
+    $('credit').innerHTML = `Method: James Hoffmann, <a href="${m.video}" target="_blank" rel="noopener">${m.title}</a> (${m.year}).`;
     doseRange.value = dose;
     doseRange.style.setProperty('--pct', ((dose - 10) / 30 * 100) + '%');
     P = m.phases(); renderNow(); renderTL(); updateClock();
@@ -565,6 +566,7 @@
 
   function renderTL(){
     const started = running || acc>0, cur = P[idx].row;
+    $('stepsHead').textContent = midBrew() ? 'Steps · tap one to skip to it' : 'Steps';
     tl.innerHTML = rows().map(p => {
       const active = started && !finished && p.row===cur, past = started && (p.row<cur || finished);
       const tap = midBrew() && !active;
