@@ -125,17 +125,6 @@
   .chips button em{font-family:var(--sans);font-style:normal;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
   .chips button.on{background:var(--ink);color:var(--paper)}
   .chips button:disabled{opacity:.4;cursor:not-allowed}
-  /* settings rows with iOS switches (native in Safari; drawn to match elsewhere) */
-  .opts{margin-top:14px;border-top:1px solid var(--rule);font-size:16px;color:var(--ink)}
-  .opts label{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;min-height:50px}
-  .opts label + label{border-top:1px solid var(--rule)}
-  :root{--switch:#141414}
-  @media (prefers-color-scheme: dark){ :root{--switch:#77736b} }   /* keeps the white knob visible when on */
-  .opts input{accent-color:var(--switch);flex:none;margin:0}
-  .fakeswitch .opts input{appearance:none;-webkit-appearance:none;width:51px;height:31px;border-radius:999px;background:var(--rule);position:relative;cursor:pointer;transition:background .2s}
-  .fakeswitch .opts input::before{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2),0 0 0 .5px rgba(0,0,0,.06);transition:transform .25s cubic-bezier(.3,1.3,.5,1)}
-  .fakeswitch .opts input:checked{background:var(--switch)}
-  .fakeswitch .opts input:checked::before{transform:translateX(20px)}
   .fine{font-size:13px;color:var(--muted);margin:12px 0 0;line-height:1.5}
 
   /* brew */
@@ -283,10 +272,6 @@
         </div>
       </div>
       <p class="fine" id="methodNote"></p>
-      <div class="opts">
-        <label><span>Chime at each step</span><input type="checkbox" switch id="beepChk" checked></label>
-        <label><span>Keep screen awake</span><input type="checkbox" switch id="wakeChk" checked></label>
-      </div>
     </div>
   </details>
   </div>
@@ -365,7 +350,6 @@
 </nav>
 
 <script>
-if(!('switch' in HTMLInputElement.prototype)) document.documentElement.classList.add('fakeswitch');
 (function(){
   // ---------- recipe scaling ----------
   let dose = 30, ratio = 'hoff', methodOverride = null;
@@ -470,7 +454,7 @@ if(!('switch' in HTMLInputElement.prototype)) document.documentElement.classList
   const $ = id => document.getElementById(id);
   const srLive=$('srLive'), clock=$('clock'), clocksub=$('clocksub'), nowLab=$('nowLab'), nowAct=$('nowAct'), nowList=$('nowList'),
         bar=$('bar'), next=$('next'), startBtn=$('startBtn'), advBtn=$('advBtn'), pauseBtn=$('pauseBtn'),
-        resetBtn=$('resetBtn'), tl=$('tl'), beepChk=$('beepChk'), wakeChk=$('wakeChk'),
+        resetBtn=$('resetBtn'), tl=$('tl'),
         doseRange=$('doseRange');
 
   // ---------- state ----------
@@ -484,7 +468,7 @@ if(!('switch' in HTMLInputElement.prototype)) document.documentElement.classList
   // ---------- audio ----------
   let actx=null;
   function chime(n=1){
-    if(!beepChk.checked || !actx) return;
+    if(!actx) return;
     try{
       for(let i=0;i<n;i++){
         const o=actx.createOscillator(), gn=actx.createGain(), t=actx.currentTime+i*0.22;
@@ -499,7 +483,7 @@ if(!('switch' in HTMLInputElement.prototype)) document.documentElement.classList
   let lock=null;
   async function wake(on){
     try{
-      if(on && wakeChk.checked && 'wakeLock' in navigator && !lock){ lock = await navigator.wakeLock.request('screen'); lock.addEventListener('release',()=>lock=null); }
+      if(on && 'wakeLock' in navigator && !lock){ lock = await navigator.wakeLock.request('screen'); lock.addEventListener('release',()=>lock=null); }
       if(!on && lock){ await lock.release(); lock=null; }
     }catch(e){ lock=null; }
   }
@@ -696,7 +680,6 @@ if(!('switch' in HTMLInputElement.prototype)) document.documentElement.classList
   });
   resetBtn.addEventListener('click', reset);
   advBtn.addEventListener('click', advance);
-  wakeChk.addEventListener('change', ()=>wake(running && wakeChk.checked));
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && running) wake(true); });
 
 
