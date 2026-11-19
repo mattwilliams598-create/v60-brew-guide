@@ -47,7 +47,7 @@
   /* ---------- views (main + History) ---------- */
   .view{position:absolute;inset:0;overflow:hidden;background:var(--bg);transition:transform .4s cubic-bezier(.2,.85,.25,1),opacity .4s ease}
   .scroller{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-  .wrap{max-width:560px;margin:0 auto;padding:calc(var(--st) + 62px) calc(16px + var(--sr)) calc(118px + var(--sb)) calc(16px + var(--sl))}
+  .wrap{max-width:560px;margin:0 auto;padding:calc(var(--st) + 80px) calc(16px + var(--sr)) calc(118px + var(--sb)) calc(16px + var(--sl))}
   #historyPane .wrap{padding-bottom:calc(40px + var(--sb))}
   .pane{z-index:3;transform:translateX(100%);visibility:hidden;box-shadow:-12px 0 32px rgba(0,0,0,.12);
     transition:transform .4s cubic-bezier(.2,.85,.25,1),visibility 0s linear .4s}
@@ -56,17 +56,15 @@
   body.dragging .view, body.dragging .dock{transition:none !important}
 
   /* top bar: Liquid Glass buttons float over the content; the title collapses into it on scroll */
-  .topbar{position:absolute;z-index:2;left:0;right:0;top:0;pointer-events:none;padding:calc(var(--st) + 10px) calc(16px + var(--sr)) 0 calc(16px + var(--sl))}
+  .topbar{position:absolute;z-index:2;left:0;right:0;top:0;pointer-events:none;padding:calc(var(--st) + 28px) calc(16px + var(--sr)) 0 calc(16px + var(--sl))}
   .topbar-in{position:relative;max-width:528px;margin:0 auto;height:44px;display:flex;align-items:center;justify-content:space-between}
   .topbar button{pointer-events:auto}
   .inline-title{position:absolute;left:60px;right:60px;text-align:center;font-weight:600;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .2s}
   .view.scrolled .inline-title{opacity:1}
   /* scroll edge effects: only where content passes under floating controls */
-  .edge-top{position:absolute;z-index:1;left:0;right:0;top:0;height:calc(var(--st) + 70px);pointer-events:none;opacity:0;transition:opacity .2s;
-    background:linear-gradient(to bottom,var(--bg) 45%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-    -webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent);mask-image:linear-gradient(to bottom,#000 55%,transparent)}
+  .edge-top{position:absolute;z-index:1;left:0;right:0;top:0;height:calc(var(--st) + 100px);pointer-events:none;opacity:0;transition:opacity .2s;
+    background:linear-gradient(to bottom,var(--bg) calc(100% - 26px),transparent)}
   .view.scrolled .edge-top{opacity:1}
-  .edge-bottom{position:absolute;z-index:1;left:0;right:0;bottom:0;height:calc(96px + var(--sb));pointer-events:none;background:linear-gradient(to top,var(--bg) 40%,transparent)}
 
   .large-title{font:500 clamp(26px,8vw,31px)/1.12 var(--serif);letter-spacing:-.01em;margin:0;padding:0 4px;white-space:nowrap}
   .subtitle{font-size:15px;color:var(--sec);margin:2px 4px 0}
@@ -85,6 +83,7 @@
 
   /* ---------- grouped content ---------- */
   .sec-h{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--sec);margin:22px 16px 7px;font-weight:400}
+  #brew .sec-h{margin-top:18px}
   .sec-f{font-size:13px;line-height:18px;color:var(--sec);margin:7px 16px 0}
   .sec-f b{color:var(--ink);font-weight:600}
   .sec-f:empty{display:none}
@@ -99,8 +98,8 @@
   .recipe-row b{color:var(--ink);font-weight:600}
 
   /* timer */
-  #brew{scroll-margin-top:calc(var(--st) + 62px)}
-  .clock{font-weight:400;font-size:clamp(72px,24.6vw,96px);line-height:.95;letter-spacing:-.035em;padding:14px 4px 0}
+  #brew{scroll-margin-top:calc(var(--st) + 80px)}
+  .clock{font-weight:400;font-size:clamp(72px,23vw,90px);line-height:.95;letter-spacing:-.035em;padding:4px 4px 0}
   .clocksub{font-size:15px;line-height:24px;height:24px;color:var(--sec);margin-top:4px;padding:0 4px;white-space:nowrap;overflow:hidden}
   .clocksub b{color:var(--ink);font-weight:600}
   .clocksub.over b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
@@ -117,7 +116,7 @@
   .now li::before{content:"";position:absolute;left:2px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--sec)}
 
   /* steps list */
-  .tl .r{position:relative;display:grid;grid-template-columns:20px 46px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:40px;font-size:16px}
+  .tl .r{position:relative;display:grid;grid-template-columns:20px 46px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:38px;font-size:16px}
   .tl .r + .r::before{content:"";position:absolute;top:0;left:28px;right:0;height:1px;background:var(--sep)}
   .tl .mk{display:flex;justify-content:center;color:var(--sec)}
   .tl .tm{font-size:15px;color:var(--sec)}
@@ -127,6 +126,8 @@
   .tl .r.active .tm{color:var(--ink)}
   .tl .r.active .mk::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ink)}
   .tl .r.past{color:var(--sec)}
+  .tl .r.tap{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+  .tl .r.tap:active{opacity:.45}
 
   /* disclosure rows */
   .disc{margin-top:22px}
@@ -154,8 +155,10 @@
   body.hist .dock{opacity:0;transform:translateY(30px);pointer-events:none}
   body.hist .dock > *{pointer-events:none}
   .dock .prominent{height:52px;padding:0 30px;border-radius:999px;font-weight:600;font-size:17px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 8px 24px var(--lift)}
-  .group{display:flex;height:52px;border-radius:999px;padding:0 4px;box-shadow:inset 0 1px 0 var(--glass-hi),0 8px 24px var(--glass-sh)}
-  .group button{width:52px;height:52px;border:0;background:transparent;display:grid;place-items:center;padding:0;cursor:pointer;color:var(--ink)}
+  #startBtn{min-width:168px}   /* Start and the end-of-brew Reset share one capsule */
+  .dock .glass{height:52px;padding:0 24px;border-radius:999px;font-weight:600;font-size:17px;cursor:pointer;box-shadow:inset 0 1px 0 var(--glass-hi),0 8px 24px var(--glass-sh)}
+  .dock .grow{flex:1}
+  #pauseBtn{min-width:106px;transition:transform .15s ease,opacity .15s ease,background-color .3s ease,color .3s ease}   /* Pause and Resume keep one width */
   .ghost{position:fixed;z-index:6;margin:0 !important;pointer-events:none}
 
   /* ---------- Adjust sheet ---------- */
@@ -213,7 +216,7 @@
 
   /* shorter screens (iPhone SE): keep the timer and every step above the toolbar */
   @media (max-height: 740px){
-    .clock{font-size:68px;padding-top:6px}
+    .clock{font-size:66px;padding-top:0}
     .now{padding:11px 16px 12px}
     .now .act{font-size:25px;margin-bottom:3px}
     .now .act .w{font-size:28px}
@@ -222,9 +225,9 @@
     .tl .r{min-height:33px;font-size:15px}
   }
   @media (max-height: 700px){
-    .clock{font-size:60px}
+    .clock{font-size:56px}
     #brew .sec-h{margin-top:10px;margin-bottom:4px}
-    .tl .r{min-height:31px}
+    .tl .r{min-height:30px}
     .now .act{font-size:24px}
   }
   @media (prefers-reduced-motion: reduce){
@@ -289,7 +292,6 @@
   </div>
   </main>
   <div class="edge-top" aria-hidden="true"></div>
-  <div class="edge-bottom" aria-hidden="true"></div>
   <div class="topbar"><div class="topbar-in">
     <span></span>
     <div class="inline-title" aria-hidden="true">Hoffmann’s V60 Technique</div>
@@ -316,10 +318,8 @@
 </section>
 
 <nav class="dock" aria-label="Brew controls">
-  <div class="group glass" id="ctlGroup" hidden>
-    <button type="button" id="resetBtn" aria-label="Reset"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4 4.5V9h4.5"/></svg></button>
-    <button type="button" id="pauseBtn" aria-label="Pause"></button>
-  </div>
+  <button type="button" class="glass" id="resetBtn" hidden>Reset</button>
+  <button type="button" class="glass" id="pauseBtn" hidden>Pause</button>
   <button type="button" class="prominent" id="startBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span id="startLabel">Start</span></button>
   <button type="button" class="prominent" id="advBtn" hidden>Next Step</button>
 </nav>
@@ -328,7 +328,7 @@
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" inert>
   <div class="sheet-head" id="sheetHead">
     <button type="button" class="icon-btn glass" id="sheetCancel" aria-label="Cancel"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <h2 id="sheetTitle">Recipe</h2>
+    <h2 id="sheetTitle">Adjust Recipe</h2>
     <button type="button" class="icon-btn prominent" id="sheetDone" aria-label="Done"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
   </div>
   <div class="card slider-row">
@@ -376,7 +376,7 @@
     ult: {
       name:'Original', title:'The Ultimate V60 Technique', year:2019, target:210,
       video:'https://www.youtube.com/watch?v=AI4ynXzkSQo',
-      note:'The video brews 30 g to 500 g at 60 g per litre. Other settings keep the bloom at 2× the coffee and the first pour at 60% of the water; the clock times stay the video’s.',
+      note:'Video recipe: 30 g → 500 g. Other doses keep the bloom at 2× the coffee and the first pour at 60% of the water.',
       rinse:'Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small>',
       tips:[
         ['Swirl, don’t stir, the bloom.','Swirling wets all the grounds more effectively than a spoon.'],
@@ -411,7 +411,7 @@
     one: {
       name:'1 Cup', title:'A Better 1 Cup V60 Technique', year:2022, target:180,
       video:'https://www.youtube.com/watch?v=1oB1oDrDkHM',
-      note:'The video brews 15 g to 250 g at 60 g per litre: a 50 g bloom, then four 50 g pours. Other settings scale the pours to 40/60/80/100% of the water, with the bloom at 20% of it but never more than 50 g; the clock times stay the video’s.',
+      note:'Video recipe: 15 g → 250 g — a 50 g bloom, then four 50 g pours. Other doses scale the pours; the bloom is 20% of the water, never over 50 g.',
       rinse:'Rinse the filter and preheat the V60.<small>Doing it over the sink slows the water down, so it heats the cone with less water.</small>',
       tips:[
         ['Grind medium-fine','— use soft, filtered water, freshly boiled for lighter roasts.'],
@@ -492,10 +492,8 @@
     }catch(e){ lock=null; }
   }
 
-  const ICON_PAUSE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg>';
-  const ICON_PLAY = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>';
   const ICON_CHECK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-  const ctlGroup = $('ctlGroup'), startLabel = $('startLabel'), adjustBtn = $('adjustBtn'), dock = document.querySelector('.dock');
+  const startLabel = $('startLabel'), startIcon = startBtn.querySelector('svg'), adjustBtn = $('adjustBtn'), dock = document.querySelector('.dock');
   const mainView = $('mainView');
 
   // ---------- render ----------
@@ -527,7 +525,8 @@
     const started = running || acc>0, cur = P[idx].row;
     tl.innerHTML = rows().map(p => {
       const active = started && !finished && p.row===cur, past = started && (p.row<cur || finished);
-      return `<div class="r ${active?'active':''} ${past?'past':''}"><span class="mk">${past ? ICON_CHECK : ''}</span><span class="tm">${p.at}</span><span>${p.short}</span><span class="wt">${p.wt?g(p.wt):''}</span></div>`;
+      const tap = midBrew() && !active;
+      return `<div class="r ${active?'active':''} ${past?'past':''}${tap?' tap':''}" data-row="${p.row}"${tap?` role="button" tabindex="0" aria-label="Skip to ${p.short} at ${p.at}"`:''}><span class="mk">${past ? ICON_CHECK : ''}</span><span class="tm">${p.at}</span><span>${p.short}</span><span class="wt">${p.wt?g(p.wt):''}</span></div>`;
     }).join('');
   }
 
@@ -576,55 +575,70 @@
   }
 
   // ---------- bottom toolbar ----------
-  // Ready: ▶ Start. Brewing: a glass group (Reset, Pause/Resume); when a step needs you to
-  // confirm it, the filled action (Swirled, Done Draining) joins on the trailing side.
+  // Apple HIG: one filled (prominent) button for the most likely action; secondary buttons
+  // the same height, told apart by style not size; text labels where no standard symbol exists.
+  //   Ready ............ ▶ Start
+  //   Timed step ....... Reset (glass) · Pause/Resume (filled)
+  //   Step to confirm .. Reset · Pause (glass) · Swirled / Done Draining (filled)
+  //   Finished ......... Reset (filled) — tapping it clears the brew and turns back into ▶ Start
   function setButtons(){
-    const before = snapDock();
+    const before = snapDock(), oldLabel = startLabel.textContent;
     const mid = midBrew(), p = P[idx], confirm = mid && !!p.manual;
     adjustBtn.disabled = mid;
     startBtn.hidden = mid;
-    startLabel.textContent = finished ? 'Brew Again' : 'Start';
-    ctlGroup.hidden = !mid;
-    pauseBtn.innerHTML = running ? ICON_PAUSE : ICON_PLAY;
-    pauseBtn.setAttribute('aria-label', running ? 'Pause' : 'Resume');
+    startLabel.textContent = finished ? 'Reset' : 'Start';
+    startIcon.style.display = finished ? 'none' : '';
+    resetBtn.hidden = !mid;
+    pauseBtn.hidden = !mid;
+    pauseBtn.textContent = running ? 'Pause' : 'Resume';
+    pauseBtn.className = confirm ? 'glass' : 'prominent grow';
     advBtn.hidden = !confirm;
+    advBtn.className = 'prominent grow';
     if(p.manual) advBtn.textContent = p.manual;
-    dock.classList.toggle('split', confirm);
-    morphDock(before);
+    dock.classList.toggle('split', mid);
+    morphDock(before, oldLabel !== startLabel.textContent);
   }
 
   // Liquid morph between toolbar layouts: what appears grows out of what was there, what
   // leaves shrinks into what replaces it, and anything that stays slides to its new place.
-  const DOCK_ITEMS = [startBtn, ctlGroup, advBtn];
+  const DOCK_ITEMS = [startBtn, resetBtn, pauseBtn, advBtn];
   const reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches:false };
   let dockReady = false, ghosts = [];
   function snapDock(){
     const m = new Map();
-    DOCK_ITEMS.forEach(el => { if(!el.hidden){ const r = el.getBoundingClientRect(); m.set(el, { x:r.left, y:r.top, w:r.width, h:r.height }); } });
+    DOCK_ITEMS.forEach(el => { if(!el.hidden){ const r = el.getBoundingClientRect(); m.set(el, { x:r.left, y:r.top, w:r.width, h:r.height, prom: el.classList.contains('prominent') }); } });
     return m;
   }
-  function morphDock(before){
+  function morphDock(before, relabelled){
     if(!dockReady){ dockReady = true; return; }
     ghosts.forEach(g => g.remove()); ghosts = [];
     if(reduceMotion.matches || !startBtn.animate || document.body.classList.contains('hist')) return;
     const after = snapDock();
     const DUR = 420, SPRING = 'cubic-bezier(.3,1.25,.4,1)';
     const leaving = [...before.keys()].filter(el => !after.has(el));
+    const prom = m => [...m.keys()].find(el => m.get(el).prom);
+    const src0 = before.get(leaving.find(el => before.get(el).prom) || leaving[0]) || before.get(prom(before));
     const tf = (from, to) => `translate(${from.x - to.x}px, ${from.y - to.y}px) scale(${from.w / to.w}, ${from.h / to.h})`;
     after.forEach((a, el) => {
       el.style.transformOrigin = '0 0';
       const b = before.get(el);
+      if(b && el === startBtn && relabelled){
+        // Reset → Start: the same capsule reshapes while the label swaps
+        el.animate([{ width: b.w + 'px' }, { width: a.w + 'px' }], { duration: DUR, easing: SPRING });
+        [...el.children].forEach(c => c.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 0, offset: .25 }, { opacity: 1, transform: 'none' }], { duration: DUR, easing: 'ease-out' }));
+        return;
+      }
       if(b){
         if(Math.abs(b.x - a.x) < 1 && Math.abs(b.w - a.w) < 1) return;
         el.animate([{ transform: tf(b, a) }, { transform: 'none' }], { duration: DUR, easing: SPRING });
       } else {
-        const src = before.get(leaving[0]) || before.get(ctlGroup) || before.get(startBtn) || a;
+        const src = src0 || a;
         el.animate([{ transform: tf(src, a), opacity: 0 }, { opacity: 1, offset: .45 }, { transform: 'none', opacity: 1 }], { duration: DUR, easing: SPRING });
       }
     });
     leaving.forEach(el => {
       const b = before.get(el);
-      const target = after.get(ctlGroup) || after.get(startBtn) || after.get(advBtn);
+      const target = after.get(prom(after)) || [...after.values()][0];
       if(!target) return;
       const g = el.cloneNode(true); g.removeAttribute('id'); g.hidden = false; g.classList.add('ghost'); g.setAttribute('aria-hidden', 'true');
       g.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
@@ -634,6 +648,27 @@
       anim.onfinish = () => { g.remove(); ghosts = ghosts.filter(x => x !== g); };
     });
   }
+
+  // ---------- tap a step to jump to it while brewing ----------
+  function jumpTo(row){
+    if(!midBrew()) return;
+    const target = P.findIndex(p => p.row === row && !p.pause);
+    if(target < 0 || target === idx || (P[idx].row === row && !P[idx].pause)) return;
+    const p = P[target], now = elapsed();
+    const t = p.start != null ? p.start : (target > idx ? now : (P[target-1] && P[target-1].end != null ? P[target-1].end : now));
+    acc = t; t0 = performance.now();
+    idx = target;
+    manualAt = p.start == null ? t : null;
+    drawAt = p.key === 'draw' ? t : null;
+    chime(p.ch || 2);
+    renderNow(); renderTL(); setButtons(); updateClock();
+  }
+  tl.addEventListener('click', e => { const r = e.target.closest('.r[data-row]'); if(r) jumpTo(+r.dataset.row); });
+  tl.addEventListener('keydown', e => {
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    const r = e.target.closest('.r[data-row]'); if(!r) return;
+    e.preventDefault(); jumpTo(+r.dataset.row);
+  });
 
   function advance(){
     if(idx < P.length-1){
@@ -665,7 +700,7 @@
 
   // ---------- events ----------
   startBtn.addEventListener('click', ()=>{
-    if(finished) reset();
+    if(finished){ reset(); return; }
     try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume && actx.resume(); }catch(e){}
     setSheet(false); setHistory(false);
     running=true; t0=performance.now(); wake(true);
@@ -769,7 +804,7 @@
   function renderHistory(){
     const a = loadH();
     $('histEmpty').hidden = a.length > 0;
-    $('histActions').hidden = a.length === 0;
+    $('histActions').hidden = !(editing && a.length);
     $('histEdit').hidden = a.length === 0;
     if(!a.length && editing) setEditing(false);
     $('histSum').textContent = a.length ? `${a.length} brew${a.length===1?'':'s'} on this iPhone` : '';
@@ -793,6 +828,7 @@
   function setEditing(on){
     editing = on;
     $('historyPane').classList.toggle('editing', on);
+    $('histActions').hidden = !(on && loadH().length);
     closeRows();
     if(on){ histEdit.className = 'icon-btn prominent'; histEdit.setAttribute('aria-label', 'Done'); histEdit.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'; }
     else { histEdit.className = 'text-btn glass'; histEdit.removeAttribute('aria-label'); histEdit.textContent = 'Edit'; }
