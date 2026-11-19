@@ -87,6 +87,8 @@
   .sec-f{font-size:13px;line-height:18px;color:var(--sec);margin:7px 16px 0}
   .sec-f b{color:var(--ink);font-weight:600}
   .sec-f:empty{display:none}
+  #methodNote{min-height:36px}   /* both methods' notes take two lines, so the sheet never jumps */
+  #methodFoot{min-height:18px}
   .card{background:var(--card);border-radius:22px;padding:0 16px}
 
   .recipe{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:12px 0 11px}
@@ -152,13 +154,29 @@
     height:52px;display:flex;align-items:center;justify-content:center;gap:12px;pointer-events:none;transition:opacity .25s ease,transform .4s cubic-bezier(.2,.85,.25,1)}
   .dock.split{justify-content:space-between}
   .dock > *{pointer-events:auto}
+  /* scrolling down minimises the floating controls; scrolling back up (or to the top) restores them */
+  .dock .prominent,.dock .glass{transition:height .38s cubic-bezier(.3,1.25,.4,1),padding .38s cubic-bezier(.3,1.25,.4,1),font-size .3s ease,min-width .38s cubic-bezier(.3,1.25,.4,1),
+    transform .15s ease,opacity .15s ease,background-color .3s ease,color .3s ease}
+  body.dock-compact .dock{transform:translateY(10px)}
+  body.dock-compact .dock .prominent,body.dock-compact .dock .glass{height:40px;padding:0 18px;font-size:15px}
+  body.dock-compact .dock .prominent svg{width:12px;height:12px}
+  body.dock-compact #startBtn{min-width:120px}
+  body.dock-compact #pauseBtn{min-width:86px}
+  .topbar .icon-btn,.topbar .text-btn{transition:transform .38s cubic-bezier(.3,1.25,.4,1),opacity .15s ease}
+  .view.compact .topbar .icon-btn{transform:scale(.8)}
+  .view.compact .topbar .text-btn{transform:scale(.84)}
+  .view.compact .topbar #histBtn{transform-origin:right center}
+  .view.compact .topbar #histBack{transform-origin:left center}
+  .view.compact .topbar #histEdit{transform-origin:right center}
+  .inline-title{transition:opacity .2s,font-size .3s ease}
+  .view.compact .inline-title{font-size:15px}
   body.hist .dock{opacity:0;transform:translateY(30px);pointer-events:none}
   body.hist .dock > *{pointer-events:none}
   .dock .prominent{height:52px;padding:0 30px;border-radius:999px;font-weight:600;font-size:17px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 8px 24px var(--lift)}
   #startBtn{min-width:168px}   /* Start and the end-of-brew Reset share one capsule */
   .dock .glass{height:52px;padding:0 24px;border-radius:999px;font-weight:600;font-size:17px;cursor:pointer;box-shadow:inset 0 1px 0 var(--glass-hi),0 8px 24px var(--glass-sh)}
   .dock .grow{flex:1}
-  #pauseBtn{min-width:106px;transition:transform .15s ease,opacity .15s ease,background-color .3s ease,color .3s ease}   /* Pause and Resume keep one width */
+  #pauseBtn{min-width:106px}   /* Pause and Resume keep one width */
   .ghost{position:fixed;z-index:6;margin:0 !important;pointer-events:none}
 
   /* ---------- Adjust sheet ---------- */
@@ -376,7 +394,7 @@
     ult: {
       name:'Original', title:'The Ultimate V60 Technique', year:2019, target:210,
       video:'https://www.youtube.com/watch?v=AI4ynXzkSQo',
-      note:'Video recipe: 30 g → 500 g. Other doses keep the bloom at 2× the coffee and the first pour at 60% of the water.',
+      note:'Video recipe: 30 g → 500 g. Other doses keep the bloom at 2× the coffee and the first pour at 60%.',
       rinse:'Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small>',
       tips:[
         ['Swirl, don’t stir, the bloom.','Swirling wets all the grounds more effectively than a spoon.'],
@@ -411,7 +429,7 @@
     one: {
       name:'1 Cup', title:'A Better 1 Cup V60 Technique', year:2022, target:180,
       video:'https://www.youtube.com/watch?v=1oB1oDrDkHM',
-      note:'Video recipe: 15 g → 250 g — a 50 g bloom, then four 50 g pours. Other doses scale the pours; the bloom is 20% of the water, never over 50 g.',
+      note:'Video recipe: 15 g → 250 g — 50 g bloom, four 50 g pours. Other doses scale; bloom max 50 g.',
       rinse:'Rinse the filter and preheat the V60.<small>Doing it over the sink slows the water down, so it heats the cone with less water.</small>',
       tips:[
         ['Grind medium-fine','— use soft, filtered water, freshly boiled for lighter roasts.'],
@@ -509,7 +527,7 @@
     mark('#presetSeg button', b => +b.dataset.p === dose);
     const auto = METHODS[autoMethod()].name;
     $('methodFoot').innerHTML = methodOverride
-      ? `You picked <b>${m.name}</b>. For ${dose} g the app would pick ${auto}.`
+      ? `You picked <b>${m.name}</b>; for ${dose} g the app picks ${auto}.`
       : `Picked for you: <b>1 Cup</b> up to 20 g, <b>Original</b> above.`;
     $('methodName').textContent = m.name;
     $('methodNote').textContent = m.note;
@@ -582,6 +600,8 @@
   //   Step to confirm .. Reset · Pause (glass) · Swirled / Done Draining (filled)
   //   Finished ......... Reset (filled) — tapping it clears the brew and turns back into ▶ Start
   function setButtons(){
+    const wasCompact = document.body.classList.contains('dock-compact');
+    if(dockReady) setCompact(mainView, false);
     const before = snapDock(), oldLabel = startLabel.textContent;
     const mid = midBrew(), p = P[idx], confirm = mid && !!p.manual;
     adjustBtn.disabled = mid;
@@ -596,6 +616,7 @@
     advBtn.className = 'prominent grow';
     if(p.manual) advBtn.textContent = p.manual;
     dock.classList.toggle('split', mid);
+    if(wasCompact) return;   // the controls are already growing back to full size; skip the morph
     morphDock(before, oldLabel !== startLabel.textContent);
   }
 
@@ -707,6 +728,7 @@
     renderNow(); renderTL(); setButtons(); chime(1); loop();
     // scroll only the content (scrollIntoView would also nudge the fixed layers)
     const brew = $('brew');
+    quietUntil = performance.now() + 1000; setCompact(mainView, false);
     $('scroller').scrollTo({ top: brew.offsetTop - parseFloat(getComputedStyle(brew).scrollMarginTop || 0), behavior: 'smooth' });
   });
   pauseBtn.addEventListener('click', ()=>{
@@ -719,8 +741,23 @@
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && running) wake(true); });
 
   // large titles collapse into the top bar once they scroll under it
+  let quietUntil = 0;   // ignore the app's own scrolling (e.g. Start bringing the timer into view)
+  function setCompact(view, on){
+    view.classList.toggle('compact', on);
+    if(view === mainView) document.body.classList.toggle('dock-compact', on);
+  }
   function watchTitle(scroller, view){
-    const on = () => view.classList.toggle('scrolled', scroller.scrollTop > 34);
+    let last = scroller.scrollTop, run = 0;
+    const on = () => {
+      const y = scroller.scrollTop, dy = y - last; last = y;
+      view.classList.toggle('scrolled', y > 34);
+      if(y < 40 || performance.now() < quietUntil){ run = 0; setCompact(view, false); return; }
+      if(y + scroller.clientHeight >= scroller.scrollHeight - 2) return;   // ignore the bounce at the bottom
+      if((dy > 0) !== (run > 0)) run = 0;             // direction changed: start counting again
+      run += dy;
+      if(run > 14) setCompact(view, true);            // scrolling down: tuck the controls away
+      else if(run < -28) setCompact(view, false);     // scrolling back up: bring them back
+    };
     scroller.addEventListener('scroll', on, { passive: true }); on();
   }
   watchTitle($('scroller'), mainView);
