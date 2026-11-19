@@ -37,7 +37,9 @@
   button{font-family:inherit;color:inherit}
   :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .wrap{max-width:560px;margin:0 auto;
-    padding:calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
+    padding:calc(30px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
+  /* keep text out of iOS's soft blur along the top edge, including when Start scrolls to the timer */
+  #brew{scroll-margin-top:calc(26px + env(safe-area-inset-top))}
   .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 
   /* header */
