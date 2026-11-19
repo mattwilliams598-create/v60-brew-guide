@@ -155,13 +155,18 @@
   .dock.split{justify-content:space-between}
   .dock > *{pointer-events:auto}
   /* scrolling down minimises the floating controls; scrolling back up (or to the top) restores them */
-  .dock .prominent,.dock .glass{transition:height .38s cubic-bezier(.3,1.25,.4,1),padding .38s cubic-bezier(.3,1.25,.4,1),font-size .3s ease,min-width .38s cubic-bezier(.3,1.25,.4,1),
-    transform .15s ease,opacity .15s ease,background-color .3s ease,color .3s ease}
-  body.dock-compact .dock{transform:translateY(10px)}
-  body.dock-compact .dock .prominent,body.dock-compact .dock .glass{height:40px;padding:0 18px;font-size:15px}
-  body.dock-compact .dock .prominent svg{width:12px;height:12px}
-  body.dock-compact #startBtn{min-width:120px}
-  body.dock-compact #pauseBtn{min-width:86px}
+  .dock .prominent,.dock .glass{overflow:hidden;white-space:nowrap;transition:transform .15s ease,opacity .15s ease,background-color .3s ease,color .3s ease}
+  .dock .ic{display:none;flex:none}
+  #startBtn:not(.done) .ic-play{display:block;width:15px;height:15px}
+  body.dock-compact .dock{transform:translateY(8px)}
+  /* minimised: each control becomes an icon-only circle */
+  body.dock-compact .dock .prominent,body.dock-compact .dock .glass{width:48px;height:48px;min-width:0;padding:0;flex:none;border-radius:50%;gap:0}
+  body.dock-compact .dock .lbl{display:none}
+  body.dock-compact .dock .ic{display:block;width:19px;height:19px}
+  body.dock-compact #startBtn,body.dock-compact #pauseBtn{min-width:0}
+  body.dock-compact #startBtn:not(.done) .ic-reset,body.dock-compact #startBtn.done .ic-play{display:none}
+  body.dock-compact #pauseBtn:not(.paused) .ic-play,body.dock-compact #pauseBtn.paused .ic-pause{display:none}
+  body.dock-compact #startBtn:not(.done) .ic-play,body.dock-compact #pauseBtn .ic-play{margin-left:2px}   /* optical centring of the triangle */
   .topbar .icon-btn,.topbar .text-btn{transition:transform .38s cubic-bezier(.3,1.25,.4,1),opacity .15s ease}
   .view.compact .topbar .icon-btn{transform:scale(.8)}
   .view.compact .topbar .text-btn{transform:scale(.84)}
@@ -174,7 +179,7 @@
   body.hist .dock > *{pointer-events:none}
   .dock .prominent{height:52px;padding:0 30px;border-radius:999px;font-weight:600;font-size:17px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 8px 24px var(--lift)}
   #startBtn{min-width:168px}   /* Start and the end-of-brew Reset share one capsule */
-  .dock .glass{height:52px;padding:0 24px;border-radius:999px;font-weight:600;font-size:17px;cursor:pointer;box-shadow:inset 0 1px 0 var(--glass-hi),0 8px 24px var(--glass-sh)}
+  .dock .glass{display:inline-flex;align-items:center;justify-content:center;height:52px;padding:0 24px;border-radius:999px;font-weight:600;font-size:17px;cursor:pointer;box-shadow:inset 0 1px 0 var(--glass-hi),0 8px 24px var(--glass-sh)}
   .dock .grow{flex:1}
   #pauseBtn{min-width:106px}   /* Pause and Resume keep one width */
   .ghost{position:fixed;z-index:6;margin:0 !important;pointer-events:none}
@@ -336,10 +341,10 @@
 </section>
 
 <nav class="dock" aria-label="Brew controls">
-  <button type="button" class="glass" id="resetBtn" hidden>Reset</button>
-  <button type="button" class="glass" id="pauseBtn" hidden>Pause</button>
-  <button type="button" class="prominent" id="startBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span id="startLabel">Start</span></button>
-  <button type="button" class="prominent" id="advBtn" hidden>Next Step</button>
+  <button type="button" class="glass" id="resetBtn" aria-label="Reset" hidden><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4 4.5V9h4.5"/></svg><span class="lbl">Reset</span></button>
+  <button type="button" class="glass" id="pauseBtn" aria-label="Pause" hidden><svg class="ic ic-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg><svg class="ic ic-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span class="lbl" id="pauseLabel">Pause</span></button>
+  <button type="button" class="prominent" id="startBtn" aria-label="Start"><svg class="ic ic-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><svg class="ic ic-reset" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4 4.5V9h4.5"/></svg><span class="lbl" id="startLabel">Start</span></button>
+  <button type="button" class="prominent" id="advBtn" aria-label="Next Step" hidden><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span class="lbl" id="advLabel">Next Step</span></button>
 </nav>
 
 <div class="scrim" id="scrim"></div>
@@ -511,7 +516,7 @@
   }
 
   const ICON_CHECK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-  const startLabel = $('startLabel'), startIcon = startBtn.querySelector('svg'), adjustBtn = $('adjustBtn'), dock = document.querySelector('.dock');
+  const startLabel = $('startLabel'), pauseLabel = $('pauseLabel'), advLabel = $('advLabel'), adjustBtn = $('adjustBtn'), dock = document.querySelector('.dock');
   const mainView = $('mainView');
 
   // ---------- render ----------
@@ -607,14 +612,16 @@
     adjustBtn.disabled = mid;
     startBtn.hidden = mid;
     startLabel.textContent = finished ? 'Reset' : 'Start';
-    startIcon.style.display = finished ? 'none' : '';
+    startBtn.classList.toggle('done', finished);
+    startBtn.setAttribute('aria-label', startLabel.textContent);
     resetBtn.hidden = !mid;
     pauseBtn.hidden = !mid;
-    pauseBtn.textContent = running ? 'Pause' : 'Resume';
-    pauseBtn.className = confirm ? 'glass' : 'prominent grow';
+    pauseLabel.textContent = running ? 'Pause' : 'Resume';
+    pauseBtn.setAttribute('aria-label', pauseLabel.textContent);
+    pauseBtn.className = (confirm ? 'glass' : 'prominent grow') + (running ? '' : ' paused');
     advBtn.hidden = !confirm;
     advBtn.className = 'prominent grow';
-    if(p.manual) advBtn.textContent = p.manual;
+    if(p.manual){ advLabel.textContent = p.manual; advBtn.setAttribute('aria-label', p.manual); }
     dock.classList.toggle('split', mid);
     if(wasCompact) return;   // the controls are already growing back to full size; skip the morph
     morphDock(before, oldLabel !== startLabel.textContent);
@@ -744,7 +751,19 @@
   let quietUntil = 0;   // ignore the app's own scrolling (e.g. Start bringing the timer into view)
   function setCompact(view, on){
     view.classList.toggle('compact', on);
-    if(view === mainView) document.body.classList.toggle('dock-compact', on);
+    if(view !== mainView || document.body.classList.contains('dock-compact') === on) return;
+    const items = [...dock.children].filter(el => !el.hidden);
+    const before = items.map(el => el.getBoundingClientRect());
+    document.body.classList.toggle('dock-compact', on);
+    if(reduceMotion.matches || !dock.animate || document.body.classList.contains('hist')) return;
+    const SPRING = 'cubic-bezier(.3,1.2,.4,1)';
+    items.forEach((el, i) => {
+      const a = el.getBoundingClientRect(), b = before[i];
+      el.animate([{ width: b.width + 'px', height: b.height + 'px', borderRadius: on ? '999px' : '50%', flexGrow: 0 },
+                  { width: a.width + 'px', height: a.height + 'px', borderRadius: on ? '50%' : '999px', flexGrow: 0 }], { duration: 400, easing: SPRING });
+      const show = el.querySelector(on ? '.ic' : '.lbl');
+      if(show) el.querySelectorAll(on ? '.ic' : '.lbl').forEach(n => n.animate([{ opacity: 0, transform: 'scale(.7)' }, { opacity: 0, offset: .3 }, { opacity: 1, transform: 'none' }], { duration: 400, easing: 'ease-out' }));
+    });
   }
   function watchTitle(scroller, view){
     let last = scroller.scrollTop, run = 0;
