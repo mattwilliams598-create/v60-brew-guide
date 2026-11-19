@@ -43,13 +43,17 @@
   .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
 
   /* header */
-  header{padding-bottom:10px;border-bottom:2px solid var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px}
-  header h1{font-size:clamp(20px,5.6vw,24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  header h1{font-size:clamp(21px,6.2vw,24px);line-height:1;padding-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  /* shared surfaces: soft sheet cards and small-caps section labels */
+  .card{background:var(--wash);border-radius:20px}
+  .sec{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:16px 2px 6px}
   /* outlined pill buttons (History, Back) — same style as Reset */
   .pill{flex:none;height:44px;padding:0 18px;border-radius:999px;border:2px solid var(--ink);background:transparent;color:var(--ink);
     font:600 16px var(--sans);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:opacity .1s}
   .pill:active{opacity:.7}
   .pill.round{width:44px;padding:0}
+  .pill.round svg{display:block}
   /* history page: slides over from the right like an iPhone screen push */
   .pane{position:absolute;inset:0;z-index:3;background:var(--paper);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
     transform:translateX(100%);visibility:hidden;box-shadow:-12px 0 32px rgba(20,20,20,.12);
@@ -58,13 +62,15 @@
   body.hist .pane{transform:none;visibility:visible;transition:transform .4s cubic-bezier(.2,.85,.25,1),visibility 0s}
   body.hist .scroller{transform:translateX(-28%);opacity:.6}
   .pane-wrap{max-width:560px;margin:0 auto;padding:calc(30px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
-  .pane-title{font-family:var(--serif);font-weight:500;font-size:28px;line-height:1.15;margin:12px 0 0;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+  .pane-title{font-family:var(--serif);font-weight:500;font-size:30px;line-height:1.1;margin:16px 0 0;letter-spacing:-.01em}
   @media (prefers-reduced-motion: reduce){ .pane,.scroller,body.hist .pane{transition:none} body.hist .scroller{transform:none} }
   body.dragging .pane, body.dragging .scroller{transition:none !important}
   /* brew history */
-  .hist-sum{font-size:14px;color:var(--muted);margin:12px 0 0}
-  .hist-day{font-family:var(--serif);font-weight:500;font-size:19px;margin:20px 0 0;padding-bottom:6px;border-bottom:2px solid var(--ink)}
-  .hrow{display:grid;grid-template-columns:70px minmax(0,1fr) auto 36px;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--rule)}
+  .hist-sum{font-size:14px;color:var(--muted);margin:4px 0 0}
+  .hist-day{font-family:var(--sans);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:20px 2px 6px}
+  .hcard{padding:0 6px 0 14px}
+  .hrow{display:grid;grid-template-columns:66px minmax(0,1fr) auto 36px;gap:8px;align-items:start;padding:12px 0}
+  .hrow + .hrow{border-top:1px solid var(--rule)}
   .hwhen{font-family:var(--mono);font-size:14px;color:var(--muted);padding-top:2px}
   .hwhat{font-size:15px;line-height:1.35}
   .hwhat .m{display:block;font-weight:600}
@@ -75,14 +81,18 @@
   .hdel{border:0;background:none;color:var(--muted);width:36px;height:36px;margin-top:-6px;border-radius:50%;display:grid;place-items:center;cursor:pointer;padding:0}
   .hist-empty{font-size:15px;color:var(--muted);margin:16px 0}
   .hist-actions{margin:18px 0 0;font-size:14px;color:var(--muted)}
-  .linkbtn{border:0;background:none;padding:8px 0;font:600 14px var(--sans);color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-  .linkbtn.danger{color:#a0261d}
-  @media (prefers-color-scheme: dark){ .linkbtn.danger{color:#ff8a80} }
+  #histConfirm:not([hidden]){display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  #histConfirm span{margin-right:4px}
+  .linkbtn{height:36px;padding:0 16px;border:1.5px solid var(--ink);border-radius:999px;background:transparent;font:600 14px var(--sans);color:var(--ink);cursor:pointer}
+  .linkbtn:active{opacity:.7}
+  .linkbtn.danger{color:#a0261d;border-color:#a0261d}
+  @media (prefers-color-scheme: dark){ .linkbtn.danger{color:#ff8a80;border-color:#ff8a80} }
   h1{font-family:var(--serif);font-weight:500;font-size:24px;line-height:1.15;margin:0;letter-spacing:-.01em}
 
   /* recipe summary */
-  .recipe{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--rule)}
-  .recipe > div{padding:11px 0 10px}
+  .recipe-card{padding:0 16px}
+  .recipe{display:grid;grid-template-columns:repeat(4,1fr)}
+  .recipe > div{padding:12px 0 10px}
   .recipe > div + div{padding-left:12px;border-left:1px solid var(--rule)}
   .recipe .k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
   .recipe .v{font-family:var(--mono);font-weight:500;font-size:20px;letter-spacing:-.03em;margin-top:1px}
@@ -90,11 +100,14 @@
 
   details summary{list-style:none;cursor:pointer}
   details summary::-webkit-details-marker{display:none}
-  details.adjust summary{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:46px;padding:8px 0;font-size:14px;color:var(--muted);border-bottom:1px solid var(--rule)}
-  details.adjust summary .act-link{color:var(--ink);font-weight:600;white-space:nowrap}
-  .plus{display:inline-block;font-family:var(--mono);font-size:17px;font-weight:500;width:14px;text-align:center;transition:transform .2s}
-  details[open] > summary .plus{transform:rotate(45deg)}
-  .adjust-body{padding:14px 0 16px;border-bottom:1px solid var(--rule)}
+  details.adjust summary{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:50px;padding:8px 0;font-size:14px;color:var(--muted);border-top:1px solid var(--rule)}
+  details.adjust summary > span:first-child{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .act-pill{flex:none;display:inline-flex;align-items:center;justify-content:center;height:32px;min-width:76px;padding:0 14px;border:1.5px solid var(--ink);border-radius:999px;color:var(--ink);font-weight:600;font-size:14px}
+  .act-pill .shut{display:none}
+  details[open] > summary .act-pill{background:var(--ink);color:var(--paper)}
+  details[open] > summary .act-pill .open{display:none}
+  details[open] > summary .act-pill .shut{display:inline}
+  .adjust-body{padding:14px 0 16px;border-top:1px solid var(--rule)}
   .row{display:flex;align-items:center;gap:14px}
   .row + .row{margin-top:14px}
   .row label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;width:58px;flex:none}
@@ -120,24 +133,28 @@
   .clocksub b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:-.02em}
   .clocksub b.plain{font-family:inherit;font-size:inherit;letter-spacing:0}
   .clocksub.over b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
-  .bar{height:5px;background:var(--wash);margin-top:8px;overflow:hidden;border-radius:1px}
+  .bar{height:6px;background:var(--rule);margin-top:8px;overflow:hidden;border-radius:999px}
   .bar i{display:block;height:100%;width:0;background:var(--ink);transition:width .2s linear}
-  .now{margin-top:12px;padding:10px 14px 12px;background:var(--wash);border-left:4px solid var(--ink)}
+  .now{margin-top:12px;padding:12px 18px 14px;background:var(--ink);color:var(--paper);border-radius:20px}
+  .now .kicker{color:var(--paper);opacity:.72}
+  .now .u{color:inherit;opacity:.7}
   .now .act{font-family:var(--serif);font-size:clamp(26px,7.4vw,32px);font-weight:500;line-height:1.1;margin:2px 0 6px;letter-spacing:-.01em}
   .now .act .w{font-family:var(--mono);font-weight:500;font-size:1.3em;letter-spacing:-.02em;white-space:nowrap}
   .now ul{margin:0;padding:0;list-style:none}
   .now li{position:relative;padding-left:18px;margin:3px 0;font-size:16px;line-height:1.4}
-  .now li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--ink)}
-  .next{margin-top:8px;font-size:15px;color:var(--muted)}
+  .now li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--paper)}
+  .next{margin:8px 2px 0;font-size:15px;color:var(--muted)}
+  .next:empty{display:none}
   .next b{color:var(--ink);font-weight:600}
 
   /* timeline */
-  .tl{margin-top:12px;border-top:2px solid var(--ink)}
-  .tl .r{display:grid;grid-template-columns:22px 52px 1fr auto;gap:8px;align-items:baseline;padding:8px 8px 8px 4px;border-bottom:1px solid var(--rule);font-size:15px}
+  .tl{padding:0 14px 0 8px}
+  .tl .r{display:grid;grid-template-columns:22px 52px 1fr auto;gap:8px;align-items:baseline;padding:8px 0;font-size:15px}
+  .tl .r + .r{border-top:1px solid var(--rule)}
   .tl .mk{font-size:13px;color:var(--muted);text-align:center}
   .tl .tm{font-family:var(--mono);color:var(--muted);font-size:14px}
   .tl .wt{font-family:var(--mono);font-weight:500;font-size:15px}
-  .tl .r.active{background:var(--wash);font-weight:600}
+  .tl .r.active{font-weight:600}
   .tl .r.active .mk::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ink)}
   .tl .r.active .tm{color:var(--ink);font-weight:500}
   .tl .r.past{color:var(--muted)}
@@ -145,22 +162,26 @@
   .tl .r.past .wt .u{color:var(--muted)}
 
   /* folds */
-  details.fold{border-bottom:1px solid var(--rule)}
-  details.fold:first-of-type{margin-top:24px;border-top:1px solid var(--rule)}
-  details.fold summary{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:10px 0}
+  details.fold{padding:0 16px;margin-top:10px}
+  #prepFold{margin-top:22px}
+  details.fold summary{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:58px;padding:10px 0}
+  details.fold[open] summary{border-bottom:1px solid var(--rule)}
+  .chev{flex:none;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;transition:transform .25s ease}
+  .chev svg{display:block;margin-top:1px}
+  details[open] > summary .chev{transform:rotate(180deg)}
   details.fold summary h2{font-family:var(--serif);font-weight:500;font-size:21px;margin:0}
   details.fold summary span.meta{font-size:14px;font-weight:500;color:var(--muted);margin-left:auto;margin-right:14px}
-  ol.prep{list-style:none;padding:0;margin:0 0 12px;counter-reset:step}
+  ol.prep{list-style:none;padding:0;margin:0 0 4px;counter-reset:step}
   ol.prep li{counter-increment:step;display:flex;gap:14px;align-items:flex-start;padding:12px 0}
   ol.prep li::before{content:counter(step);flex:0 0 24px;height:24px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font:600 13px var(--mono);margin-top:1px}
   ol.prep li + li{border-top:1px solid var(--rule)}
   .t{font-size:16px}
   .t small{display:block;color:var(--muted);font-size:14px;margin-top:1px}
-  ul.tips{margin:0 0 14px;padding:0;list-style:none}
+  ul.tips{margin:0 0 4px;padding:0;list-style:none}
   ul.tips li{padding:11px 0;font-size:16px;line-height:1.45}
   ul.tips li + li{border-top:1px solid var(--rule)}
   ul.tips b{font-weight:600}
-  footer{margin-top:22px;font-size:13px;color:var(--muted)}
+  footer{margin:22px 2px 0;font-size:13px;color:var(--muted)}
   footer a{color:var(--ink)}
 
   /* fixed controls */
@@ -191,7 +212,9 @@
     .clock{font-size:64px}
     .now .act{font-size:24px}
     .now li{font-size:15px;margin:2px 0}
-    .tl .r{padding:6px 8px 6px 4px;font-size:14px}
+    .tl .r{padding:6px 0;font-size:14px}
+    #stepsLab{display:none}
+    .tl{margin-top:10px}
   }
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;scroll-behavior:auto !important}
@@ -204,10 +227,11 @@
 
   <header>
     <h1 id="title">Hoffmann’s V60 Technique</h1>
-    <button type="button" class="pill" id="histBtn" aria-controls="historyPane">History</button>
+    <button type="button" class="pill round" id="histBtn" aria-controls="historyPane" aria-label="Brew history"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12h4"/></svg></button>
   </header>
   <div id="mainView">
 
+  <div class="card recipe-card">
   <div class="recipe">
     <div><div class="k">Coffee</div><div class="v"><span data-dose>30</span><span class="u">g</span></div></div>
     <div><div class="k">Water</div><div class="v"><span data-water>500</span><span class="u">g</span></div></div>
@@ -216,7 +240,7 @@
   </div>
 
   <details class="adjust" id="adjust">
-    <summary><span><b id="methodName" style="color:var(--ink);font-weight:600">Original</b> · medium-fine grind</span><span class="act-link">Adjust <span class="plus" aria-hidden="true">+</span></span></summary>
+    <summary><span><b id="methodName" style="color:var(--ink);font-weight:600">Original</b> · medium-fine grind</span><span class="act-pill"><span class="open">Adjust</span><span class="shut">Done</span></span></summary>
     <div class="adjust-body">
       <div class="row">
         <label for="doseRange">Coffee</label>
@@ -253,6 +277,7 @@
       </div>
     </div>
   </details>
+  </div>
 
   <section class="brew" id="brew">
     <div class="clock" id="clock">0:00</div>
@@ -264,11 +289,12 @@
       <ul id="nowList"></ul>
     </div>
     <div class="next" id="next"></div>
-    <div class="tl" id="tl"></div>
+    <h2 class="sec" id="stepsLab">Steps</h2>
+    <div class="card tl" id="tl"></div>
   </section>
 
-  <details class="fold" id="prepFold">
-    <summary><h2>Before you start</h2><span class="plus">+</span></summary>
+  <details class="card fold" id="prepFold">
+    <summary><h2>Before you start</h2><span class="chev" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></summary>
     <ol class="prep" id="prep">
       <li><span class="t">Boil your water.<small>As hot as you can — especially with lighter roasts.</small></span></li>
       <li><span class="t">Grind <span data-dose>30</span> g of coffee, medium-fine.</span></li>
@@ -279,8 +305,8 @@
     </ol>
   </details>
 
-  <details class="fold">
-    <summary><h2>Notes from the video</h2><span class="plus">+</span></summary>
+  <details class="card fold">
+    <summary><h2>Notes from the video</h2><span class="chev" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></summary>
     <ul class="tips" id="tips"></ul>
   </details>
 
@@ -303,7 +329,7 @@
     <p class="hist-empty" id="histEmpty">No brews yet. Finish a brew (tap <b>Done draining</b>) and it’ll appear here.</p>
     <div class="hist-actions" id="histActions">
       <button type="button" class="linkbtn" id="histClear">Clear history</button>
-      <span id="histConfirm" hidden>Delete every brew? <button type="button" class="linkbtn danger" id="histYes">Delete all</button> · <button type="button" class="linkbtn" id="histNo">Cancel</button></span>
+      <span id="histConfirm" hidden><span>Delete every brew?</span><button type="button" class="linkbtn danger" id="histYes">Delete all</button><button type="button" class="linkbtn" id="histNo">Cancel</button></span>
     </div>
   </div>
 </section>
@@ -475,7 +501,7 @@
     document.querySelectorAll('#methodChips button').forEach(b=>b.classList.toggle('on', b.dataset.m===method()));
     document.querySelectorAll('#presetChips button').forEach(b=>b.classList.toggle('on', +b.dataset.p===dose));
     document.querySelectorAll('[data-auto]').forEach(e=>e.textContent = e.dataset.auto===autoMethod() ? (e.dataset.auto==='one'?'auto · ≤20 g':'auto · >20 g') : '');
-    $('methodName').textContent = m.name + ' method';
+    $('methodName').textContent = m.name;
     $('methodNote').textContent = m.note;
     $('prepRinse').innerHTML = m.rinse;
     $('tips').innerHTML = m.tips.map(([b,t])=>`<li><b>${b}</b> ${t}</li>`).join('');
@@ -685,7 +711,7 @@
     let html = '', last = null;
     a.forEach(b => {
       const k = dayKey(b.t);
-      if(k !== last){ html += `<h2 class="hist-day">${dayLabel(b.t)}</h2>`; last = k; }
+      if(k !== last){ html += `${last===null?'':'</div>'}<h2 class="hist-day">${dayLabel(b.t)}</h2><div class="card hcard">`; last = k; }
       html += `<div class="hrow">
         <div class="hwhen">${clockTime(b.t)}</div>
         <div class="hwhat"><span class="m">${b.name}</span><span class="amt">${b.dose} g → ${b.water} g · ${b.ratio}</span>${b.draw!=null ? `<small>Drawdown ${fmt(b.draw)}</small>` : ''}</div>
@@ -693,6 +719,7 @@
         <button type="button" class="hdel" data-t="${b.t}" aria-label="Delete the ${clockTime(b.t)} brew from ${dayLabel(b.t)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>`;
     });
+    if(last !== null) html += '</div>';
     $('histList').innerHTML = html;
     $('histConfirm').hidden = true; $('histClear').hidden = false;
   }
