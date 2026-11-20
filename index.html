@@ -288,7 +288,7 @@
   .hcard{padding:0;overflow:hidden}
   .hitem{position:relative;overflow:hidden}
   .hitem + .hitem::before{content:"";position:absolute;z-index:2;top:0;left:16px;right:0;height:1px;background:var(--sep)}
-  .hrow{position:relative;z-index:1;display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 16px;background:var(--card);transition:transform .3s cubic-bezier(.2,.85,.25,1);touch-action:pan-y}
+  .hrow{position:relative;z-index:1;display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 16px;background:var(--card);transition:transform .3s cubic-bezier(.2,.85,.25,1);touch-action:pan-y}
   .hitem.open .hrow{transform:translateX(-88px)}
   .hitem.swiping .hrow{transition:none}
   .hopen{flex:1;min-width:0;display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;margin:0;text-align:left;font:inherit;color:inherit;cursor:pointer;min-height:48px}
@@ -297,12 +297,11 @@
   .hmain{flex:1;min-width:0}
   .hmain > span,.hright > span{display:block}
   .h1{font-size:17px}
-  .h1 b{font-weight:600}
   .h2{font-size:15px;color:var(--sec);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .h3{font-size:13px;color:var(--sec);margin-top:1px}
   .hright{text-align:right;flex:none}
-  .ht{font-weight:500;font-size:20px}
-  .hv{font-size:13px;color:var(--sec)}
+  .ht{flex:none;font-size:17px;color:var(--sec);font-variant-numeric:tabular-nums}
+  .hchev{flex:none;color:var(--ter);margin:0 -2px 0 -4px;transition:opacity .2s ease}
+  .editing .hchev{opacity:0}
   .hminus{display:none;flex:none;width:28px;height:44px;margin:-10px 0 -10px -4px;border:0;background:none;padding:0;cursor:pointer;place-items:center}
   .hminus span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--redfill)}
   .hminus span::before{content:"";width:10px;height:2px;border-radius:1px;background:#fff}
@@ -978,14 +977,14 @@
     a.forEach(b => {
       const k = dayKey(b.t);
       if(k !== last){ html += `${last===null?'':'</div>'}<h2 class="sec-h"${last===null?' style="margin-top:16px"':''}>${dayLabel(b.t)}</h2><div class="card hcard">`; last = k; }
-      const amt = `${b.dose} → ${b.water} g · ${b.ratio}`;
       html += `<div class="hitem" data-t="${b.t}">
         <button type="button" class="hdelete" tabindex="-1">Delete</button>
         <div class="hrow">
           <button type="button" class="hminus" aria-label="Delete the ${clockTime(b.t)} brew from ${dayLabel(b.t)}"><span></span></button>
           <button type="button" class="hopen" aria-label="${b.name} brew, ${clockTime(b.t)} ${dayLabel(b.t)}, ${fmt(b.total)}. Show details.">
-            <span class="hmain"><span class="h1"><b>${b.name}</b> · ${clockTime(b.t)}</span><span class="h2">${amt}</span>${b.draw!=null ? `<span class="h3">Drawdown ${fmt(b.draw)}</span>` : ''}</span>
-            <span class="hright"><span class="ht">${fmt(b.total)}</span><span class="hv">${vsTarget(b.total, b.target)}</span></span>
+            <span class="hmain"><span class="h1">${b.name}</span><span class="h2">${clockTime(b.t)}</span></span>
+            <span class="ht">${fmt(b.total)}</span>
+            <svg class="hchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
           </button>
         </div></div>`;
     });
