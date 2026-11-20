@@ -273,6 +273,23 @@
   .kv + .kv{border-top:1px solid var(--sep)}
   .kv .v{color:var(--sec);text-align:right;white-space:nowrap}
   .kv .v small{font-size:13px;margin-left:6px}
+  /* details: a two-column metrics grid, like Fitness's workout details */
+  .bd-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;margin-top:12px}
+  .stat{padding:11px 0 12px;min-width:0}
+  .stat:nth-child(n+3){border-top:1px solid var(--sep)}
+  .stat .k{display:block;font-size:13px;color:var(--sec)}
+  .stat .n{display:block;font-size:24px;line-height:30px;margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  /* steps sit behind a disclosure row (progressive disclosure) */
+  .bd-steps{margin-top:12px}
+  .bd-disc{display:flex;width:100%;min-height:48px;align-items:center;justify-content:space-between;border:0;background:none;padding:0;color:var(--ink);font:inherit;font-size:17px;cursor:pointer}
+  .bd-disc svg{color:var(--ter);transition:transform .35s cubic-bezier(.32,.72,0,1)}
+  .bd-disc[aria-expanded="true"] svg{transform:rotate(90deg)}
+  .bd-fold{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s cubic-bezier(.32,.72,0,1)}
+  .bd-fold > div{overflow:hidden;min-height:0}
+  .bd-fold.open{grid-template-rows:1fr}
+  .bd-fold .kv:first-child{border-top:1px solid var(--sep)}
+  .bd-note{font-size:13px;color:var(--sec);padding:2px 0 12px;margin:0}
+  @media (prefers-reduced-motion: reduce){.bd-fold,.bd-disc svg{transition:none}}
   .bd-again{display:flex;width:100%;height:50px;margin-top:22px;border-radius:25px;font-weight:600;font-size:17px;align-items:center;justify-content:center;gap:8px;cursor:pointer}
   .bd-again:disabled{opacity:.35}
   .bd-delete{margin-top:12px}
@@ -1051,6 +1068,7 @@
   let brewOpen = false, brewT = null;
   const RATIO_KEY = { '1:16':'16', '1:16.7':'hoff', '1:17':'17', '1:18':'18' };
   const kv = (k, v) => `<div class="kv"><span>${k}</span><span class="v">${v}</span></div>`;
+  const stat = (k, v) => `<div class="stat"><span class="k">${k}</span><span class="n">${v}</span></div>`;
   function renderBrew(b){
     const d = new Date(b.t), diff = b.total - b.target;
     const when = d.toLocaleDateString(undefined, { weekday:'long', month:'short', day:'numeric' }) + ' · ' + clockTime(b.t);
@@ -1073,15 +1091,25 @@
         <div class="bd-total">${fmt(b.total)}</div>
         <div class="bd-vs">${vs}</div>
       </div>
-      <h3 class="sec-h">Recipe</h3>
-      <div class="card">${kv('Method', b.name)}${kv('Coffee', b.dose + ' g')}${kv('Water', b.water + ' g')}${kv('Ratio', b.ratio)}${kv('Bloom', bloom + ' g')}</div>
-      <h3 class="sec-h">Timing</h3>
-      <div class="card">${kv('Total time', fmt(b.total))}${kv('Target', fmt(b.target))}${b.draw != null ? kv('Drawdown', fmt(b.draw)) : ''}${b.pauses ? kv('Paused', `${b.pauses}× · ${fmt(b.paused || 0)}`) : ''}</div>
-      ${steps ? `<h3 class="sec-h">Steps</h3><div class="card">${steps}</div><p class="sec-f">Clock time when each step began.</p>` : ''}
+      <div class="card bd-grid">
+        ${stat('Coffee', b.dose + ' g')}${stat('Water', b.water + ' g')}
+        ${stat('Ratio', b.ratio)}${stat('Bloom', bloom + ' g')}
+        ${stat('Drawdown', b.draw != null ? fmt(b.draw) : '—')}${stat('Paused', b.pauses ? fmt(b.paused || 0) : 'None')}
+      </div>
+      ${steps ? `<div class="card bd-steps">
+        <button type="button" class="bd-disc" id="stepsToggle" aria-expanded="false" aria-controls="stepsList"><span>Steps</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <div class="bd-fold" id="stepsList" inert><div>${steps}<p class="bd-note">Clock time when each step began.</p></div></div>
+      </div>` : ''}
       <button type="button" class="prominent bd-again" id="brewAgain"${midBrew() ? ' disabled' : ''}>Brew This Again</button>
       ${midBrew() ? '<p class="sec-f">Finish or reset the current brew first.</p>' : ''}
       <div class="card bd-delete"><button type="button" id="brewDelete">Delete Brew</button></div>`;
   }
+  brewSheet.addEventListener('click', e => {
+    const t = e.target.closest('#stepsToggle'); if(!t) return;
+    const open = t.getAttribute('aria-expanded') !== 'true';
+    t.setAttribute('aria-expanded', open); $('stepsList').classList.toggle('open', open);
+    $('stepsList').inert = !open;
+  });
   function openBrew(t){
     const b = loadH().find(x => x.t === t); if(!b) return;
     brewT = t; renderBrew(b); setBrewSheet(true);
