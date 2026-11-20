@@ -38,7 +38,7 @@
 
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
-  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:400 17px/1.35 var(--sans);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+  html,body{margin:0;height:100%;overflow:hidden;overflow:clip;background:var(--bg);color:var(--ink);font:400 17px/1.35 var(--sans);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
   body{position:relative;height:100vh;height:100dvh}
   button{font-family:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
   :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
@@ -174,6 +174,7 @@
   #pauseBtn{left:50%;width:0}
   #startBtn{left:50%;width:0}
   #advBtn{left:100%;width:0}
+  #saveBtn{left:100%;width:0}
   .dock button.off{opacity:0;pointer-events:none;box-shadow:none;border-color:transparent}
   /* Ready / finished: one capsule in the middle */
   .st-ready #startBtn{left:calc(50% - 84px);width:168px}
@@ -184,6 +185,15 @@
   .st-confirm #resetBtn{left:0;width:calc((100% - 16px) / 3)}
   .st-confirm #pauseBtn{left:calc((100% - 16px) / 3 + 8px);width:calc((100% - 16px) / 3)}
   .st-confirm #advBtn{left:calc((100% - 16px) * 2 / 3 + 16px);width:calc((100% - 16px) / 3)}
+  /* Brew finished: Reset (discard) and Save (keep it in Brew History), the same size */
+  .st-done #resetBtn{left:0;width:calc(50% - 4px)}
+  .st-done #saveBtn{left:calc(50% + 4px);width:calc(50% - 4px)}
+  /* brief confirmation after saving (tap it to open History) */
+  .toast{position:absolute;z-index:6;left:0;right:0;margin:0 auto;width:max-content;max-width:calc(100% - 32px);bottom:calc(max(16px,calc(var(--sb) - 4px)) + 64px);height:40px;padding:0 16px;border-radius:20px;display:flex;align-items:center;gap:8px;
+    font-weight:600;font-size:15px;white-space:nowrap;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(12px) scale(.94);
+    transition:opacity .3s ease,transform .45s cubic-bezier(.32,.72,0,1)}
+  .toast.show{opacity:1;pointer-events:auto;transform:none}
+  body.hist .toast{opacity:0;pointer-events:none}
   /* labels and icons fold in and out rather than popping */
   .dock .lbl,.dock .ic{display:block;flex:none;overflow:hidden;transition:max-width .45s cubic-bezier(.32,.72,0,1),opacity .3s ease,margin .45s cubic-bezier(.32,.72,0,1)}
   .dock .lbl{max-width:var(--w,160px)}
@@ -196,6 +206,8 @@
   body.dock-compact .st-timed #pauseBtn{left:calc(100% - 52px);width:52px}
   body.dock-compact .st-confirm #pauseBtn{left:calc(50% - 26px);width:52px}
   body.dock-compact .st-confirm #advBtn{left:calc(100% - 52px);width:52px}
+  body.dock-compact .st-done #resetBtn{left:0;width:52px}
+  body.dock-compact .st-done #saveBtn{left:calc(100% - 52px);width:52px}
   body.dock-compact .dock .lbl{max-width:0;opacity:0}
   body.dock-compact .dock .ic{margin:0}
   @media (max-width: 380px){ .dock button{font-size:16px} .dock .ic{margin-right:5px} }
@@ -395,7 +407,7 @@
     <p class="subtitle" id="histSum"></p>
     <div id="histList"></div>
     <div class="card hist-clear" id="histActions"><button type="button" id="histClear">Clear All History</button></div>
-    <p class="hist-empty" id="histEmpty"><b>No Brews Yet</b>Finish a brew — tap Drained when it’s done — and it’ll appear here.</p>
+    <p class="hist-empty" id="histEmpty"><b>No Brews Yet</b>Finish a brew and tap Save, and it’ll appear here.</p>
   </div>
   </div>
   <div class="edge-top" aria-hidden="true"></div>
@@ -406,11 +418,13 @@
   </div></div>
 </section>
 
+<button type="button" class="glass toast" id="savedToast" tabindex="-1" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Saved to Brew History</button>
 <nav class="dock st-ready" aria-label="Brew controls">
   <button type="button" class="glass off" id="resetBtn" aria-label="Reset" inert><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4 4.5V9h4.5"/></svg><span class="lbl">Reset</span></button>
   <button type="button" class="glass off" id="pauseBtn" aria-label="Pause" inert><svg class="ic ic-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg><svg class="ic ic-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span class="lbl" id="pauseLabel">Pause</span></button>
   <button type="button" class="prominent" id="startBtn" aria-label="Start"><svg class="ic ic-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><svg class="ic ic-reset" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"/><path d="M4 4.5V9h4.5"/></svg><span class="lbl" id="startLabel">Start</span></button>
   <button type="button" class="prominent off" id="advBtn" aria-label="Next Step" inert><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span class="lbl" id="advLabel">Next Step</span></button>
+  <button type="button" class="prominent off" id="saveBtn" aria-label="Save to Brew History" inert><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span class="lbl">Save</span></button>
 </nav>
 
 <div class="scrim" id="scrim"></div>
@@ -599,7 +613,7 @@
   }
 
   const ICON_CHECK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-  const startLabel = $('startLabel'), pauseLabel = $('pauseLabel'), advLabel = $('advLabel'), adjustBtn = $('adjustBtn'), dock = document.querySelector('.dock');
+  const saveBtn = $('saveBtn'), startLabel = $('startLabel'), pauseLabel = $('pauseLabel'), advLabel = $('advLabel'), adjustBtn = $('adjustBtn'), dock = document.querySelector('.dock');
   const mainView = $('mainView');
 
   // ---------- render ----------
@@ -651,8 +665,8 @@
       nowLab.textContent='Done';
       nowAct.innerHTML='Enjoy your coffee.';
       const diff = finalT-target;
-      nowList.innerHTML = `<li>Total time ${fmt(finalT)} — target ${fmt(target)}${Math.abs(diff)<5?', right on':diff>0?`, ${fmt(diff)} over`:`, ${fmt(-diff)} under`}.</li><li>Saved to Brew History.</li>`;
-      bar.style.width='100%'; next.innerHTML=''; srLive.textContent = 'Done. Saved to Brew History.';
+      nowList.innerHTML = `<li>Total time ${fmt(finalT)} — target ${fmt(target)}${Math.abs(diff)<5?', right on':diff>0?`, ${fmt(diff)} over`:`, ${fmt(-diff)} under`}.</li><li>Save it to Brew History, or Reset to clear it.</li>`;
+      bar.style.width='100%'; next.innerHTML=''; srLive.textContent = 'Done. Save it to Brew History, or reset to clear it.';
       return;
     }
     const p = P[idx], started = running || acc>0;
@@ -713,18 +727,17 @@
     animateDock(() => {
       document.body.classList.remove('dock-compact'); mainView.classList.remove('compact');   // a change of controls always shows them full size
       adjustBtn.disabled = mid;
-      startLabel.textContent = finished ? 'Reset' : 'Start';
-      startBtn.className = 'prominent' + (finished ? ' done' : '');
-      startBtn.setAttribute('aria-label', startLabel.textContent);
-      show(startBtn, !mid);
-      resetBtn.className = 'glass'; show(resetBtn, mid);
+      startLabel.textContent = 'Start'; startBtn.className = 'prominent'; startBtn.setAttribute('aria-label', 'Start');
+      show(startBtn, !mid && !finished);
+      resetBtn.className = 'glass'; show(resetBtn, mid || finished);
+      saveBtn.className = 'prominent'; show(saveBtn, finished);
       pauseLabel.textContent = running ? 'Pause' : 'Resume';
       pauseBtn.setAttribute('aria-label', pauseLabel.textContent);
       pauseBtn.className = (confirm ? 'glass' : 'prominent') + (running ? '' : ' paused');
       show(pauseBtn, mid);
       if(p.manual){ advLabel.textContent = p.manual; advBtn.setAttribute('aria-label', p.manual); }
       advBtn.className = 'prominent'; show(advBtn, confirm);
-      dock.classList.toggle('st-ready', !mid); dock.classList.toggle('st-timed', mid && !confirm); dock.classList.toggle('st-confirm', confirm);
+      dock.classList.toggle('st-ready', !mid && !finished); dock.classList.toggle('st-timed', mid && !confirm); dock.classList.toggle('st-confirm', confirm); dock.classList.toggle('st-done', finished);
       document.querySelectorAll('.dock .lbl').forEach(fitLabel);
     });
     dockReady = true;
@@ -762,7 +775,6 @@
     } else {
       finished = true; finalT = elapsed(); running=false; acc=finalT; cancelAnimationFrame(raf); wake(false); chime(3);
       log.push(['end', 'Drained', Math.round(finalT)]);
-      recordBrew();
     }
     renderNow(); renderTL(); setButtons(); updateClock();
   }
@@ -800,7 +812,18 @@
     else { running=true; t0=performance.now(); wake(true); loop(); if(pausedAt){ pausedFor += (performance.now() - pausedAt) / 1000; pausedAt = null; } }
     setButtons(); updateClock();
   });
-  resetBtn.addEventListener('click', reset);
+  resetBtn.addEventListener('click', reset);   // when a brew is finished this clears it without saving
+  // Save: the only way a brew gets into Brew History
+  let toastTimer = 0;
+  saveBtn.addEventListener('click', () => {
+    if(!finished) return;
+    recordBrew(); reset();
+    srLive.textContent = 'Saved to Brew History.';
+    const t = $('savedToast'); t.classList.add('show'); t.tabIndex = 0; t.removeAttribute('aria-hidden');
+    clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 2600);
+  });
+  function hideToast(){ const t = $('savedToast'); t.classList.remove('show'); t.tabIndex = -1; t.setAttribute('aria-hidden', 'true'); }
+  $('savedToast').addEventListener('click', () => { hideToast(); setHistory(true); });
   advBtn.addEventListener('click', advance);
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && running) wake(true); });
 
