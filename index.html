@@ -269,12 +269,6 @@
   .bd-total{font-weight:400;font-size:64px;line-height:1;letter-spacing:-.03em;margin-top:8px}
   .bd-vs{font-size:15px;color:var(--sec);margin-top:8px}
   .bd-vs b{color:var(--ink);font-weight:600}
-  .bd-bar{display:flex;gap:2px;height:8px;border-radius:999px;overflow:hidden;margin-top:18px}
-  .bd-bar i{display:block;height:100%;min-width:3px}
-  .bd-bar .a{background:var(--ink)} .bd-bar .r{background:var(--sep)} .bd-bar .d{background:var(--ter)}
-  .bd-key{display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:13px;color:var(--sec)}
-  .bd-key span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
-  .bd-key .a::before{background:var(--ink)} .bd-key .r::before{background:var(--sep)} .bd-key .d::before{background:var(--ter)}
   .kv{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;font-size:17px}
   .kv + .kv{border-top:1px solid var(--sep)}
   .kv .v{color:var(--sec);text-align:right;white-space:nowrap}
@@ -982,7 +976,7 @@
         <div class="hrow">
           <button type="button" class="hminus" aria-label="Delete the ${clockTime(b.t)} brew from ${dayLabel(b.t)}"><span></span></button>
           <button type="button" class="hopen" aria-label="${b.name} brew, ${clockTime(b.t)} ${dayLabel(b.t)}, ${fmt(b.total)}. Show details.">
-            <span class="hmain"><span class="h1">${b.name}</span><span class="h2">${clockTime(b.t)}</span></span>
+            <span class="hmain"><span class="h1">${b.name}</span><span class="h2">${clockTime(b.t)} · ${b.dose} g → ${b.water} g</span></span>
             <span class="ht">${fmt(b.total)}</span>
             <svg class="hchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
           </button>
@@ -1062,14 +1056,8 @@
     const when = d.toLocaleDateString(undefined, { weekday:'long', month:'short', day:'numeric' }) + ' · ' + clockTime(b.t);
     const vs = Math.abs(diff) < 5 ? `<b>On target</b> — aim was ${fmt(b.target)}` : `<b>${fmt(Math.abs(diff))} ${diff > 0 ? 'over' : 'under'}</b> the ${fmt(b.target)} target`;
     const bloom = b.bloom != null ? b.bloom : (b.method === 'one' ? Math.min(50, Math.round(b.water * .2)) : b.dose * 2);
-    // a strip of the brew: active pouring/swirling, resting, then drawdown
-    let bar = '', steps = '';
+    let steps = '';
     if(Array.isArray(b.log) && b.log.length > 1){
-      const kind = k => k === 'draw' ? 'd' : (/^w\d|^bswirl$/.test(k) ? 'r' : 'a');
-      for(let i = 0; i < b.log.length - 1; i++){
-        const dur = Math.max(0, b.log[i+1][2] - b.log[i][2]);
-        if(dur > 0) bar += `<i class="${kind(b.log[i][0])}" style="flex:${dur}"></i>`;
-      }
       const plan = new Map((b.plan || []).map(([n, at]) => [n, at]));
       const toSec = at => { const [m, s2] = String(at).split(':'); return (+m) * 60 + (+s2); };
       steps = b.log.filter(e => e[0] !== 'end' && !/^w\d$/.test(e[0])).map(([k, name, t, skip]) => {
@@ -1084,7 +1072,6 @@
         <div class="bd-when">${when}</div>
         <div class="bd-total">${fmt(b.total)}</div>
         <div class="bd-vs">${vs}</div>
-        ${bar ? `<div class="bd-bar" aria-hidden="true">${bar}</div><div class="bd-key" aria-hidden="true"><span class="a">Pouring</span><span class="r">Resting</span><span class="d">Drawdown</span></div>` : ''}
       </div>
       <h3 class="sec-h">Recipe</h3>
       <div class="card">${kv('Method', b.name)}${kv('Coffee', b.dose + ' g')}${kv('Water', b.water + ' g')}${kv('Ratio', b.ratio)}${kv('Bloom', bloom + ' g')}</div>
