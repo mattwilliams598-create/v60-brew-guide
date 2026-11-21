@@ -41,7 +41,9 @@
   html,body{margin:0;height:100%;overflow:hidden;overflow:clip;background:var(--bg);color:var(--ink);font:400 17px/1.35 var(--sans);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
   body{position:relative;height:100vh;height:100dvh}
   button{font-family:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
-  :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  /* focus ring only for keyboard use: touch and programmatic focus moves don't draw it */
+  :focus,:focus-visible{outline:none}
+  html.kbd :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   [hidden]{display:none !important}
 
@@ -213,12 +215,8 @@
   @media (max-width: 380px){ .dock button{font-size:16px} .dock .ic{margin-right:5px} }
   body.hist .dock{opacity:0;transform:translateY(30px);pointer-events:none}
   body.hist .dock > *{pointer-events:none}
-  /* top bar buttons shrink a touch on the same curve */
-  .topbar .icon-btn,.topbar .text-btn{transition:transform .45s cubic-bezier(.32,.72,0,1),opacity .15s ease}
-  .view.compact .topbar .icon-btn{transform:scale(.84)}
-  .view.compact .topbar .text-btn{transform:scale(.88)}
-  .view.compact .topbar #histBtn,.view.compact .topbar #histEdit{transform-origin:right center}
-  .view.compact .topbar #histBack{transform-origin:left center}
+  /* top bar buttons keep one size; only the bottom toolbar minimizes on scroll */
+  .topbar .icon-btn,.topbar .text-btn{transition:opacity .15s ease}
   .inline-title{transition:opacity .25s ease,font-size .45s cubic-bezier(.32,.72,0,1)}
   .view.compact .inline-title{font-size:15px}
 
@@ -1142,6 +1140,9 @@
   });
 
   let histOpen = false;
+  // input modality: keyboard shows focus rings, touch/pointer hides them
+  addEventListener('keydown', e => { if(!e.metaKey && !e.ctrlKey && !e.altKey) document.documentElement.classList.add('kbd'); }, true);
+  addEventListener('pointerdown', () => document.documentElement.classList.remove('kbd'), true);
   const pane = $('historyPane');
   function setHistory(open){
     if(open === histOpen) return;
