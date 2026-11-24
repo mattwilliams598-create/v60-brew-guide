@@ -235,11 +235,13 @@
   .slider-row label{font-size:17px}
   .slider-row .val{font-weight:500;width:46px;text-align:right;white-space:nowrap}
   input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:32px;margin:0;background:transparent;cursor:pointer;--pct:67%}
-  input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:999px;background:linear-gradient(to right,var(--ink) var(--pct),var(--fill) var(--pct))}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;margin-top:-11.5px;box-shadow:0 2px 8px rgba(0,0,0,.22),0 0 0 .5px rgba(0,0,0,.08)}
-  input[type=range]::-moz-range-track{height:5px;border-radius:999px;background:var(--fill)}
-  input[type=range]::-moz-range-progress{height:5px;border-radius:999px;background:var(--ink)}
-  input[type=range]::-moz-range-thumb{width:28px;height:28px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+  /* iOS 26 slider: thin track, capsule thumb that swells a little while you drag it */
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(to right,var(--ink) var(--pct),var(--fill) var(--pct))}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:24px;border-radius:999px;background:#fff;margin-top:-9px;box-shadow:0 2px 8px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.08);transition:transform .25s cubic-bezier(.32,.72,0,1)}
+  input[type=range]:active::-webkit-slider-thumb{transform:scale(1.12)}
+  input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--fill)}
+  input[type=range]::-moz-range-progress{height:6px;border-radius:999px;background:var(--ink)}
+  input[type=range]::-moz-range-thumb{width:38px;height:24px;border:0;border-radius:999px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.22)}
   .seg-card{padding:10px 16px}
   .seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);padding:2px;border-radius:999px;background:var(--fill)}
   .seg button{height:32px;border:0;border-radius:999px;background:transparent;font-weight:500;font-size:15px;color:var(--ink);cursor:pointer;padding:0 4px}
