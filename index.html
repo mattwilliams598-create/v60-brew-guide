@@ -245,7 +245,6 @@
   .seg-card{padding:10px 16px}
   .seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);padding:2px;border-radius:999px;background:var(--fill)}
   .seg button{height:32px;border:0;border-radius:999px;background:transparent;font-weight:500;font-size:15px;color:var(--ink);cursor:pointer;padding:0 4px}
-  .seg button svg{display:block;margin:0 auto}
   .seg button.on{background:var(--segon);font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
   @media (prefers-color-scheme: dark){ .seg button.on{box-shadow:none} }
 
@@ -469,7 +468,7 @@
   <p class="sec-f">Quick picks below: 15 g for one cup, 30 g for two.</p>
   <h3 class="sec-h">Cups</h3>
   <div class="card seg-card"><div class="seg" id="presetSeg" role="group" aria-label="Cups">
-    <button type="button" data-p="15" aria-label="1 cup, 15 grams"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8.5h11v5.5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16.5 10.5h1.3a2.4 2.4 0 0 1 0 4.8H16.1"/></svg></button><button type="button" data-p="30" aria-label="2 cups, 30 grams"><svg width="54" height="27" viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8.5h11v5.5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M17 10.5h1.3a2.4 2.4 0 0 1 0 4.8H16.6"/><path d="M28 8.5h11v5.5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M39 10.5h1.3a2.4 2.4 0 0 1 0 4.8H38.6"/></svg></button>
+    <button type="button" data-p="15">1 Cup</button><button type="button" data-p="30">2 Cups</button>
   </div></div>
   <h3 class="sec-h">Method</h3>
   <div class="card seg-card"><div class="seg" id="methodSeg" role="group" aria-label="Method">
