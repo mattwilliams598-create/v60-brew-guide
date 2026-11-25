@@ -361,7 +361,7 @@
         <div><div class="k">Finish</div><div class="v" data-target>3:30</div></div>
       </div>
       <div class="recipe-row">
-        <span><b id="methodName">Original</b> · medium-fine grind</span>
+        <span><b id="methodName">Double</b> · medium-fine grind</span>
         <button type="button" class="bordered" id="adjustBtn" aria-haspopup="dialog" aria-controls="sheet">Adjust</button>
       </div>
     </div>
@@ -472,7 +472,7 @@
   </div></div>
   <h3 class="sec-h">Method</h3>
   <div class="card seg-card"><div class="seg" id="methodSeg" role="group" aria-label="Method">
-    <button type="button" data-m="one">1 Cup</button><button type="button" data-m="ult">Original</button>
+    <button type="button" data-m="one">Single</button><button type="button" data-m="ult">Double</button>
   </div></div>
   <p class="sec-f" id="methodFoot"></p>
   <h3 class="sec-h">Ratio</h3>
@@ -497,13 +497,13 @@
   try{ const s = parseInt(localStorage.getItem('v60dose')); if(s>=10 && s<=40) dose = s; }catch(e){}
 
   // ---------- methods ----------
-  // <= 20 g uses the 1 Cup technique by default; more uses the Original (Ultimate V60) technique.
+  // <= 20 g uses the Single (1 Cup) technique by default; more uses the Double (Ultimate V60) technique.
   const autoMethod = () => dose <= 20 ? 'one' : 'ult';
   const method = () => methodOverride || autoMethod();
 
   const METHODS = {
     ult: {
-      name:'Original', title:'The Ultimate V60 Technique', year:2019, target:210,
+      name:'Double', title:'The Ultimate V60 Technique', year:2019, target:210,
       video:'https://www.youtube.com/watch?v=AI4ynXzkSQo',
       note:'Video recipe: 30 g → 500 g. Other doses keep the bloom at 2× the coffee and the first pour at 60%.',
       rinse:'Rinse the paper filter with water just off the boil.<small>Dump the rinse water.</small>',
@@ -538,7 +538,7 @@
       }
     },
     one: {
-      name:'1 Cup', title:'A Better 1 Cup V60 Technique', year:2022, target:180,
+      name:'Single', title:'A Better 1 Cup V60 Technique', year:2022, target:180,
       video:'https://www.youtube.com/watch?v=1oB1oDrDkHM',
       note:'Video recipe: 15 g → 250 g — 50 g bloom, four 50 g pours. Other doses scale; bloom max 50 g.',
       rinse:'Rinse the filter and preheat the V60.<small>Doing it over the sink slows the water down, so it heats the cone with less water.</small>',
@@ -640,7 +640,7 @@
     const auto = METHODS[autoMethod()].name;
     $('methodFoot').innerHTML = methodOverride
       ? `You picked <b>${m.name}</b>; for ${dose} g the app picks ${auto}.`
-      : `Picked for you: <b>1 Cup</b> up to 20 g, <b>Original</b> above.`;
+      : `Picked for you: <b>Single</b> up to 20 g, <b>Double</b> above.`;
     $('methodName').textContent = m.name;
     $('methodNote').textContent = m.note;
     $('prepRinse').innerHTML = m.rinse;
@@ -977,6 +977,7 @@
   const clockTime = t => new Date(t).toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' });
   const vsTarget = (total, target) => { const d = total - target; return Math.abs(d) < 5 ? 'on target' : (d > 0 ? `+${fmt(d)}` : `−${fmt(-d)}`) + ` vs ${fmt(target)}`; };
   let editing = false;
+  const brewName = b => (METHODS[b.method] && METHODS[b.method].name) || b.name;
   function renderHistory(){
     const a = loadH();
     $('histEmpty').hidden = a.length > 0;
@@ -992,8 +993,8 @@
         <button type="button" class="hdelete" tabindex="-1">Delete</button>
         <div class="hrow">
           <button type="button" class="hminus" aria-label="Delete the ${clockTime(b.t)} brew from ${dayLabel(b.t)}"><span></span></button>
-          <button type="button" class="hopen" aria-label="${b.name} brew, ${clockTime(b.t)} ${dayLabel(b.t)}, ${fmt(b.total)}. Show details.">
-            <span class="hmain"><span class="h1">${b.name}</span><span class="h2">${clockTime(b.t)} · ${b.dose} g → ${b.water} g</span></span>
+          <button type="button" class="hopen" aria-label="${brewName(b)} brew, ${clockTime(b.t)} ${dayLabel(b.t)}, ${fmt(b.total)}. Show details.">
+            <span class="hmain"><span class="h1">${brewName(b)}</span><span class="h2">${clockTime(b.t)} · ${b.dose} g → ${b.water} g</span></span>
             <span class="ht">${fmt(b.total)}</span>
             <svg class="hchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
           </button>
@@ -1084,7 +1085,7 @@
         return kv(name, `${fmt(t)}${note}`);
       }).join('') + kv('Drained', fmt(b.total));
     }
-    $('brewTitle').textContent = `${b.name} Brew`;
+    $('brewTitle').textContent = `${brewName(b)} Brew`;
     $('brewBody').innerHTML = `
       <div class="card bd-hero">
         <div class="bd-when">${when}</div>
